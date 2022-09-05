@@ -1,0 +1,19 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Proveedore;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+class ProveedoreFactory extends Factory
+{
+    protected $model = Proveedore::class;
+
+    public function definition()
+    {
+        return [
+			'nombre_proveedor' => $this->faker->name,
+        ];
+    }
+}
