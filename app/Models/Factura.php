@@ -13,7 +13,7 @@ class Factura extends Model
 
     protected $table = 'facturas';
 
-    protected $fillable = ['fecha_fac','num_fac','monto','proveedor_id', 'hiden'];
+    protected $fillable = ['fecha_fac','num_fac','monto','proveedor_id', 'hiden', 'added'];
 	
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

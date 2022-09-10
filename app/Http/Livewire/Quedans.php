@@ -29,6 +29,7 @@ class Quedans extends Component
 
 
 	public $quedan_id, $ArrayCheckedF = [], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
+	// public $quedan_id, $ArrayCheckedF = ['id'=>0, 'added'=>''], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 
 
 	public $select_facturas;
@@ -237,7 +238,7 @@ class Quedans extends Component
 
 	}
 
-	public function storeQF2(){ //! ############
+	public function storeQF(){ //StoreDelete_QF //! ############
 
 		
 		$this->validate([
@@ -248,54 +249,170 @@ class Quedans extends Component
 			// dd([$this->ArrayCheckedF]);
 
 
-			foreach ($this->ArrayCheckedF as $MyFactIds => $idF) {
+			foreach ($this->ArrayCheckedF as $MyFactIds => $checkState) {
 
-				//? $idF get a boolean value
+				//? $checkState get a boolean value
 				//? $MyFactIds get id
+				    // dd($MyFactIds, $checkState);
 
-				// $retVal = (condition) ? a : b ;
+		    	// $retVal = (condition) ? a : b ;
+		    	// $factura_id = strval($MyFactIds); //* strval convierte a string cualquier valor
+			       $factura_id = $MyFactIds;
+				// dd([$factura_id]);
 
-				// $factura_id = strval($MyFactIds);
-				$factura_id = $MyFactIds;
+				//? Consultando el Id de factura para utilizarlo en la condición que indica si la asocación ya existe
+				// $id_Fact = Quedanfactura::select('factura_id',)
+				// //->where('quedan_id', $quedan_id) //* esto ya no, porque una factura sólo puede pertenercer a un quedan
+				//   ->where('factura_id', $factura_id)
+				//   ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where' // se ha comentado debido a queahora se consultará también por los registros desasociados, para volverlos a asociar,sin tener que duplicar registros
+				//   ->value('factura_id');
 
-			// dd([$factura_id]);
+				$Myfact = Quedanfactura::join('facturas', 'quedanfacturas.factura_id', '=', 'facturas.id')
+				            ->select('quedanfacturas.hiden','quedanfacturas.factura_id','facturas.added', 'facturas.monto')
+						  //->where('quedan_id', $quedan_id) //* esto ya no, porque una factura sólo puede pertenecer a un quedan
+							->where('quedanfacturas.factura_id', $factura_id) 
+							->get();
+			// $factId_and_added = $Myfact->pluck('added','factura_id');
 
-				if($idF == true){
-					// conjunto de acciones
-				    // dd($factura_id, 'es verdadero');
-					//*insert
-				Quedanfactura::create([ //? creando el quedanfactura
-					'factura_id' => $factura_id,
-					'quedan_id' => $this->quedan_id
-		      	]);
-				}else if($idF == false)  {
-					// conjunto de acciones
-					// dd($factura_id, 'es falso');
 
-					//*delete
-				  //* ocultamos todos los quedanfacturas relacionados con este quedan
-				 	$ocultarQF = Quedanfactura::select('id')->where('quedan_id', $this->quedan_id);
-					$ocultarQF -> update(['hiden' => 1,]);
+			// dd([$Myfact]); // ¿y cuando viene vacío? es porque no existe el registro de la factura en 'quedanfacturas
+			// dd([$factId_and_added]); //vacío significa que no existe el registro de la factura
 
-					session()->flash('message', 'Registro eliminado');
-				}
-				
+			switch ($checkState) { //todo: SWITCH: '$checkState' puede traer 0||1||true||false
 
-			// $factura_id = $MyFactIds;
+				case 'true': //todo: ## insert ## (con comillas simples, porque si no, se confunde con el estado 1)
+					# dd('¿verdadero?', $checkState);
+					if ($Myfact == '[]') {
+						//? Si la factura no está insertada, será un registro NUEVO en quedanfacturas
+						# dd('No hay factura en quedanfacturas para este id', $MyFactIds);
+						//? creando el registro en quedanfactura
+							Quedanfactura::create([ 
+								'factura_id' => $factura_id,
+								'quedan_id' => $this->quedan_id
+							]);
+						//? Actualizamos el estado added de la factura a 1 para indicar que ya fue asociada
+							$updateAddedfactState = Factura::select('id')->where('id', $factura_id);
+							$updateAddedfactState -> update(['added' => 1,]);
 
-		// Quedanfactura::create([ //? creando el quedanfactura
-		// 	'factura_id' => $factura_id,
-		// 	'quedan_id' => $this-> quedan_id
-		// 	]);
+						//? Obteniendo el monto de la factura igual a la factura que se pretende insertar
+							$montofact = Factura::select('monto') 
+							->where('id', $factura_id)->value('monto');
+							# dd($montofact);
+                        //? Sumando el monto de la factura en el campo específico de quedan igual al selecionado en AssocisteModal
+							$sumvalue = Quedan::find($this->quedan_id); 
+							$sumvalue->increment('cant_num', $montofact);
+						    	
+					} else {
+						foreach ($Myfact as $MyFactura) {
+							# dd($MyFactura->factura_id,$MyFactura->hiden,$MyFactura->added,$MyFactura->monto);
+							if ($factura_id == $MyFactura->factura_id) {
+								# dd('factura ya existe' , $id_Fact);
+								//? Si la factura YA está insertada, podría ser que:
+								// if ($MyFactura->added == 1 && $MyFactura->hiden !=1) {
+								if ($MyFactura->hiden != 1) { #hiden de 'quedanfacturas'. added no va porque es más seguro sólo con hiden 
 
+									//? ** La factura esté visible (hiden= 0||null). Entonces NO se ejecuta ningua acción
+									# dd('factura ya existe y está visible.', 'facturas added:', $MyFactura->added, 'quedanfacturas hiden:', $MyFactura->hiden);
+									return null;
+
+								} else { // hiden=1, implica registro oculto.
+
+									//? ** La factura esté oculta (fue eliminada, hiden=1). En este caso se actualizarán los estados 'hiden' a 0, 'added' a 1 y 'cant_num' con val de monto.
+									    # dd('factura ya existe, pero está oculta.', 'facturas added:', $MyFactura->added, 'quedanfacturas hiden:', $MyFactura->hiden);
+
+									//? Se actualiza el estado de 'hiden' a 0 en quedanfacturas de la factura chequeada
+									    $recuperarQF = Quedanfactura::select('id')->where('factura_id', $factura_id);
+										$recuperarQF -> update(['hiden' => 0,]);
+
+									//? Se actualiza el estado added de la factura a 1 para indicar que ya fue asociada
+										$updateAddedfactState = Factura::select('id')->where('id', $factura_id);
+										$updateAddedfactState -> update(['added' => 1,]);
+
+									//? Se obtiene el monto de la factura igual a la factura chequeada
+										$montofact = Factura::select('monto') 
+										->where('id', $factura_id)->value('monto');
+										# dd($montofact);
+									//? Se suma el monto de la factura chequeada, en el campo específico de quedan 'cant_num'
+										$TotalValue = Quedan::find($this->quedan_id); 
+										$TotalValue->increment('cant_num', $montofact);
+								}
+
+							} else {
+								return null;
+							}
+						}
+				    }
+				break;
+
+				case false: //todo: ## delete ## (false, sin comillas simples, de lo contrario not working)
+					# code...
+					// dd('¿falso?', $checkState);
+					if ($Myfact == '[]') {
+						//? Si la factura no está insertada, Entones no hay nada que eliminar 
+						# dd('Eliminar es innecesario, pues No hay factura en quedanfacturas para este id', $MyFactIds);
+						return null;
+					} else {
+						foreach ($Myfact as $MyFactura) {
+							if ($factura_id == $MyFactura->factura_id) {
+								//? Si la factura YA está insertada, podría ser que:
+								if ($MyFactura->hiden != 1) { #hiden de 'quedanfacturas'.
+
+								 //? ** La factura esté visible (hiden= 0||null). En este caso se actualizarán los estados: 'hiden' a 1 (invisible), 'added' a 0 (Sin añadir) y 'cant_num' con decrement (restar).
+								   # dd('Eliminar factura que existe y está visible.', 'facturas added:', $MyFactura->added, 'quedanfacturas hiden:', $MyFactura->hiden);
+								 //! Entonces, y sólo entonces, delete (ocultar)...
+
+									//? Se actualiza el estado de 'hiden' a 1 en quedanfacturas de la factura chequeada
+									$ocultarQF = Quedanfactura::select('id')->where('factura_id', $factura_id);
+									$ocultarQF -> update(['hiden' => 1,]);
+
+								//? Se actualiza el estado added de la factura a 0, para indicar que ya NO está asociada
+									$updateAddedfactState = Factura::select('id')->where('id', $factura_id);
+									$updateAddedfactState -> update(['added' => 0,
+									]);
+
+								//? Se obtiene el monto de la factura igual a la factura chequeada
+									$montofact = Factura::select('monto') 
+									->where('id', $factura_id)->value('monto');
+									// dd($montofact);
+
+								//? Se resta el monto de la factura chequeada, en el campo específico de quedan 'cant_num'
+									$TotalValue = Quedan::find($this->quedan_id); 
+									$TotalValue->decrement('cant_num', $montofact);
+									 
+								} else { // hiden=1, implica ocultar.
+									//? ** La factura esté oculta (hiden=1 y added=0||null). Entonces no se ejecuta ningua acción de elimiación
+									// dd('No eliminar, porque aunque factura existe, ya está oculta.', 'facturas added:', $MyFactura->added, 'quedanfacturas hiden:', $MyFactura->hiden);
+									return null;
+								  }
+							} else { return null;}
+						}
+					}
+				break;
+
+				case 1: // Es como el default, pero lo dejamos para efectos de prueba
+					# code...
+					//  dd('trae 1?', $checkState);  // ;)
+					break;
+
+				default:
+					# code...
+					break;
+			}
 		}
+		session()->flash('message4', 'Proceso realizado');
+
 	}
 
-	public function storeQF()
+	public function storeQF2()
 	{
-		foreach ($this->ArrayCheckedF as $MyFactIds => $idF) {
+		// dd([$this->ArrayCheckedF]);
+		// dd([$this->ArrayUncheckedF]);
+
+		foreach ($this->ArrayCheckedF as $MyFactIds => $checkState) {
 
 		$factura_id = $MyFactIds;
+
+		// dd($MyFactIds, $checkState);
 
 		//? Consultando el Id de factura para utilizarlo en la condición que indica si la asocación ya existe
 		$id_Fact = Quedanfactura::select('factura_id')
@@ -307,8 +424,6 @@ class Quedans extends Component
 		// dd('ok');
 		// dd($factura_id, $id_Fact);
 
-		
-
 		$this->validate([
 		// 'factura_id' => 'required',
 		'quedan_id' => 'required',
@@ -319,24 +434,28 @@ class Quedans extends Component
 		if ($factura_id == $id_Fact) { // porque si marca y a la vez desmarca una factura, si no se comprueba la existencia del registro, podría decrementar incluso a partir de $0
 
 		// if ($id_Fact != 0) {
-			if($idF == false) { //*delete
-				//* ocultamos todos los quedanfacturas relacionados con este quedan
-				$ocultarQF = Quedanfactura::select('id')->where('quedan_id', $this->quedan_id);
-				$ocultarQF -> update(['hiden' => 1,]);
+			if($checkState == false) { //*delete
 
-				//? Obteniendo el monto de la factura igual al que se selecciona en el AssocisteModal, independientemente de si es marcado o desmarcado
+				// dd($checkState);
+
+				//? ocultando todos los quedanfacturas relacionados con este quedan
+				// $ocultarQF = Quedanfactura::select('id')->where('quedan_id', $this->quedan_id);
+				// $ocultarQF -> update(['hiden' => 1,]);
+
+				//? Obteniendo el monto de la factura igual a la factura que se pretende asociar o desasociar
 				$montofact = Factura::select('monto') 
 				->where('id', $factura_id)
 				->value('monto');
+
 				// dd($montofact);
 
-				//? Restando el monto en el campo específico de quedan igual al selecionado en AssocisteModal
-				$record2 = Quedan::find($this->quedan_id); 
+				//? Restando el monto al valor total del quedan igual  al monto selecionado desde AssociateModal
+				$record2 = Quedan::find($this->quedan_id);
 				$record2->decrement('cant_num', $montofact);
 
-				//? Actualizamos el estado added de la factura a 1 para indicar que ya fue añadida
+				//? Actualizamos el estado added de la Factura, a 0, para indicar que fue desasociada
 				$updateAddedfactState = Factura::select('id')->where('id', $factura_id);
-				$updateAddedfactState -> update(['added' => 1,]);
+				$updateAddedfactState -> update(['added' => 0,]);
 
 				// session()->flash('message3', 'Facturas Desasociadas');
 				
@@ -344,32 +463,35 @@ class Quedans extends Component
 
 		    session()->flash('message3', 'Asociación ya existente');
 
-		} else if($idF == true){
+		} 
+		
+		if ($factura_id != $id_Fact) {
 
-			// dd($idF);
+		if($checkState == true){
 
-		Quedanfactura::create([ //? creando el quedanfactura
+		// dd($checkState);
+
+		//? creando el quedanfactura
+		Quedanfactura::create([ 
 		'factura_id' => $factura_id,
 		'quedan_id' => $this->quedan_id
 		]);
-
-
 
 		// dd($factura_id, $id_Fact);
 		// DB::table('quedans')->increment('hiden', 1);
 		// DB::table('users')->increment('votes', 1, ['name' => 'John']); //Laravel.com ejemplo 
 
-		//? Obteniendo el monto de la factura igual al que se selecciona en el AssocisteModal, independientemente de si es marcado o desmarcado
+		//? Obteniendo el monto de la factura igual al que se marque en el AssocisteModal, que servirá para poder pasar el valor posteriormente en la suma del valor total del quedan
 		$montofact = Factura::select('monto') 
 				->where('id', $factura_id)
 				->value('monto');
 		// dd($montofact);
 
-		//? Sumando el monto en el campo específico de quedan igual al selecionado en AssocisteModal
-		$record2 = Quedan::find($this->quedan_id); 
-		$record2->increment('cant_num', $montofact);
+		//? Sumando el monto de la factura en el campo específico de quedan igual al selecionado en AssocisteModal
+		$sumvalue = Quedan::find($this->quedan_id); 
+		$sumvalue->increment('cant_num', $montofact);
 
-		//? Actualizamos el estado added de la factura a 1 para indicar que ya fue añadida
+		//? Actualizamos el estado added de la factura a 1 para indicar que ya fue asociada
 		$updateAddedfactState = Factura::select('id')->where('id', $factura_id);
 		$updateAddedfactState -> update(['added' => 1,]);
          
@@ -381,6 +503,7 @@ class Quedans extends Component
 		// $this->emit('closeModal');
 		// session()->flash('message', 'Factura asociada a Quedan correctamente');
 	  }
+	 }
 	}
 
 	public function store()
@@ -424,11 +547,32 @@ class Quedans extends Component
 
 		// return view('livewire.quedans.view', [
 			$this->select_facturas = Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
-				->select('facturas.id','fecha_fac','num_fac','monto','nombre_proveedor','proveedor_id AS my_provId')
+				->select('facturas.id','fecha_fac','num_fac','monto','nombre_proveedor','proveedor_id AS my_provId', 'added')
 				->where('proveedor_id', '=', $proveedor_id)
 				//? mejor que muestre todas las facturas, no solo las que no han sido añadidas.
 				// ->whereNull('facturas.added')->orWhere('facturas.added', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
 				->orderBy('num_fac', 'desc')->get();
+
+			//* --------------------------- Precargando ArrayCheckedF --------------------
+				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array se vuelve gigantesco;
+				// $this->ArrayCheckedF = $this->select_facturas->pluck('added','id');
+
+				//? Bajo esta forma se crea un array que obtiene SÓLO los ids con added=1 reduciendo considerablemente el tamaño del array; pero esto implica hacer otra consulta a la base de datos.
+				$Misfacturas = Factura::select('id','added')
+				->where('added', '=', 1)->get();
+				$this->ArrayCheckedF = $Misfacturas->pluck('added','id');
+			//* --------------------------------------------------------------------------
+
+
+				// foreach ($this->ArrayCheckedF as $item){
+				// 	$this->selectedUsers[$item->id] = $item->id . '';
+	            //  }    
+
+				// $this->ArrayCheckedF = Factura::select('id','added')
+				// 	->where('added', '=', 1)->get();
+				
+					// dd([$this->ArrayCheckedF]);
+
 		// ]);
 
 		// dd($this->select_facturas);

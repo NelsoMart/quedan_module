@@ -39,6 +39,11 @@ data-backdrop="static" role="dialog"
                          type="text" class="form-control" name="search" id="search" placeholder="Buscar Facturas">
                 </div>
 
+                {{-- <input wire:model="permission_resource.{{$loop->index}}" 
+                type="checkbox" class="filled-in chk-col-green form-control" 
+                id="{{$permission_type['name']}}" value="{{$permission_type['name']}}" /> --}}
+
+
                  <div class="checkbox">
                     {{-- //todo div Input CheckBox --}}
                     {{-- //! ### ojo con .defer --}}
@@ -46,27 +51,46 @@ data-backdrop="static" role="dialog"
                     @foreach ($select_facturas as $index => $selector_factura)
                     <div class="mt-3" style="margin-bottom: 3%; 
                     margin-top: 4%; margin-left: 4%">
-                    <input type="checkbox" 
-                             value="{{$selector_factura->added}}"
-                           {{-- wire:model.defer="ArrayCheckedF.{{ $index }}"  --}}
-                           wire:model.defer="ArrayCheckedF.{{ $selector_factura->id }}" 
-                           {{-- wire:model="{{$selector_factura->id}}"  --}}
-                           name="ArrayCheckedF[]" 
-                           class="form-checkbox h-6 w-6 text-green-500"
-                           @if(in_array($selector_factura->added == '1',$ArrayUncheckedF)) checked @endif
+                    <input type="checkbox" class="form-checkbox"
+                    {{-- name="ArrayCheckedF[]"  --}}
+                    {{-- wire:mouseover='hola' --}}
+                    {{-- wire:key="ArrayCheckedF{{$selector_factura->id}}" --}}
+                    {{-- @if($select_facturas->contains($selector_factura->added==1)) checked @endif --}}
+                           {{-- id="{{$selector_factura['id']}}" --}}
+                           {{-- id="ArrayCheckedF.{{ $selector_factura->id }}" --}}
+                          {{-- value="{{$selector_factura['id']}}"  --}}
+                          {{-- value="ArrayCheckedF.{{ $selector_factura->id }}"  --}}
+                           {{-- wire:model="ArrayCheckedF.{{ $loop->index }}"  --}}
+                           {{-- wire:model="ArrayCheckedF.{{ $index }}" --}}
+                           {{-- wire:model="ArrayUncheckedF.{{ $selector_factura->id }}" --}}
+                           wire:model.defer="ArrayCheckedF.{{ $selector_factura->id }}"
+                           {{-- wire:model="ArrayCheckedF.{{ $selector_factura->id }}" --}}
+                           {{-- wire:model="ArrayCheckedF.{{ $index }}" {{$this->ArrayCheckedF[$index]=$selector_factura->added == 1? 'checked' : ''}} --}}
+                           {{-- wire:model="ArrayCheckedF.{{ $selector_factura->id}}" {{$this->ArrayCheckedF[$index]=$selector_factura->added == 1? 'checked' : ''}} --}}
+                           {{-- wire:model="ArrayCheckedF.{{ $selector_factura->id }}" --}}
+                           {{-- wire:model="ArrayCheckedF.{{ $selector_factura->id }}.checked" --}}
+                           
+                           {{-- {{ $this->ArrayCheckedF[$selector_factura->id] = $selector_factura->added == 1? 'checked' : '' }} --}}
+                           {{-- {{ $this->ArrayCheckedF[$selector_factura->added] == 1? 'checked' : '' }} --}}
+                           {{-- {{ $selector_factura->added == 1? 'checked' : '' }} --}}
+                           {{-- {{ $this->ArrayCheckedF[$index] = 1 ? 'true' : '' }} --}}
+                           {{-- wire:model="ArrayCheckedF"  --}}
+                           {{--  class="form-checkbox h-6 w-6 text-green-500" --}}
+                           {{-- @if($selector_factura->added == 1) checked = {{true}} @endif --}}
+                           {{-- @if(in_array($selector_factura->id == 5, $selector_factura)) checked={{true}} @endif --}}
                        {{-- @if (in_array($select_facturas, $selector_factura->added)) checked @endif --}}
                           {{-- @if(old($selector_factura->id) == $selector_factura->id) checked @endif --}}
                          {{-- @if ($selector_factura->id == '5') checked @endif  --}}
                          {{-- @if($selector_factura->permissions->contains($permission->id)) checked @endif --}}
-                         {{-- @if($select_facturas->contains($selector_factura->id)) checked @endif --}}
+                         {{-- @if($select_facturas->contains($selector_factura->added==1)) checked @endif --}}
                          {{-- @if($select_facturas->contains($selector_factura->id)) checked @endif --}}
                          {{-- @if(in_array($selector_factura->id,$ArrayCheckedF)) checked @endif --}}
-
                           >
                           <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
+                          <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span>
                            <span class="ml-3 text-sm">Núm: {{ $selector_factura->num_fac }}</span>
                           <span class="ml-3 text-sm">Monto: {{ number_format($selector_factura->monto, 2) }}</span>
-                          <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span>
+                          {{-- <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span> --}}
                           {{-- //! <span class="ml-2 text-sm">Prov: {{ $selector_factura->nombre_proveedor }}</span> --}}
                           {{-- ID: {{$selector_factura->id }} 
                           • Núm: {{$selector_factura['num_fac'] }} 

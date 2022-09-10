@@ -17,12 +17,14 @@
 
  .cant_letras{
     border: 1px solid darkblue;
-    width: 55%;
-    margin-top: 19%;
-    margin-left: 13%;
-    height: 40px;
+    width: 55%; /*lo largo */
+    margin-top: 24%; /*para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
+    margin-left: 13%; /*para mover del borde de izquierda*/
+    height: 40px; /* lo ancho*/
 
  }
+
+
 
  .cant_num{
   
@@ -46,14 +48,59 @@
 .fecha{
    border: 1px solid orange;
    width: 15%;
-   margin-top: -5%;
+   margin-top: -6%;
    margin-left: 37%;
 }
 
 .fuente{
    width: 45%;
    border: 1px solid red;
-   margin-top: -5%;
+   margin-top: -6%;
+   margin-left: 55%;
+}
+
+
+
+/**estilos del cuadro de abajo */
+
+.cant_letrasdos{
+    border: 1px solid darkblue;
+    width: 55%; /*lo largo */
+    margin-top: 19%; /* 19para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
+    margin-left: 13%; /*para mover del borde de izquierda*/
+    height: 40px; /* lo ancho*/
+
+ }
+
+ .cant_numdos{
+  
+  margin-left: 76%;
+  width: 20%;
+  margin-top: 2%;
+  
+  border: 1px solid yellow;
+  
+}
+
+.proveedordos{
+   border: 1px solid green;
+   width: 50%;
+   margin-top: -10%;
+   margin-left: 20%;
+   height: 40px;
+ }
+
+ .fechados{
+   border: 1px solid orange;
+   width: 15%;
+   margin-top: -7%;
+   margin-left: 37%;
+}
+
+.fuentedos{
+   width: 45%;
+   border: 1px solid red;
+   margin-top: -7%;
    margin-left: 55%;
 }
 
@@ -110,27 +157,28 @@ width:900% !important;
    
    <div class="container">
          <div class="col-xs-12 col-md-3">
+            {{-- <div class="cant_letras" >{{$getQuedan->cant_letra}}</div> --}}
             <div class="cant_letras" >{{$NumConverted}}</div>
-            <div class="cant_num">$    {{$getQuedan->cant_num}}</div>
+            <div class="cant_num">$    {{ number_format($getQuedan->cant_num, 2) }}</div>
          </div>
-<br>
-<br>
-<br>
-<div class="col-xs-12 col-md-3">
-   <div class="proveedor">Proveedor: {{$getQuedan->nombre_proveedor}}</div>
-</div>
+      <br>
+      <br>
+      <br>
+      <div class="col-xs-12 col-md-3">
+         <div class="proveedor">Proveedor: {{$getQuedan->nombre_proveedor}}</div>
+   </div>
 <br>
 <br>
 
-<div class="col-xs-12 col-md-3">
-   <div class="fecha">{{date("d/m/Y", strtotime($getQuedan->fecha_emi))}}</div>
-   <div class="fuente">FUENTE DE FINANCIAMIENTO: {{$getQuedan->nombre_fuente}}</div>
-</div>
+   <div class="col-xs-12 col-md-3">
+      <div class="fecha">{{date("d/m/Y", strtotime($getQuedan->fecha_emi))}}</div>
+      <div class="fuente">FUENTE DE FINANCIAMIENTO: {{$getQuedan->nombre_fuente}}</div>
+   </div>
 
 
-<div style="border: 1px solid green;" class="altura" >
+ <div style="border: 1px solid green;" class="altura" >
 
-         <div class="col-xs-12 col-md-3" style="border: 1px solid red;">
+          <div class="col-xs-12 col-md-3" style="border: 1px solid red; margin-top: -20px;">  <!--para mover los encabezados y primera columna -->
             <span class="caja_inline" style="margin-left: 5%;">FECHA FACTURA</span>
             {{-- <div class="caja_inline">FECHA RECEPCIÓN</div> --}}
             <span class="caja_inline">NO. FACTURA</span>
@@ -149,9 +197,9 @@ width:900% !important;
  @foreach ($getFactura as $item)
          @break($count == 6)
       
-         <div class="col-xs-12 col-md-3" style="border: 1px solid blue;" class="dividir" >
+         <div  style="border: 1px solid blue;" >
             
-              <div  class="caja_inline" style="margin-left: 5%;">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
+              <div  class="caja_inline" style="margin-left: 5%; ">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
               <div class="caja_inline" >{{$item->num_fac}}</div>
               <div class="caja_inline">{{$item->monto}}</div>
 
@@ -162,101 +210,104 @@ width:900% !important;
          @endphp
  @endforeach
 
+   
+ </div>
 
 
 
-     
-</div>
+   <div style="margin-top: -88px;"> <!--para mover de arriba hacia abajo o viceversa la segunda columna -->
+   
+      @foreach ($getFacturados as $item)
+      
+         <div style="border: 1px solid orange" >
+            <div  class="caja_inline" style="margin-left: 57.5%;">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
+               <div class="caja_inline" >{{$item->num_fac}}</div>
+               <div class="caja_inline">{{$item->monto}}</div>
+         </div>
+      
 
-<?php
-   //  echo "<table border='1'><tr valign='top'><td>";
+      
+      @endforeach
+   </div>
 
-   //  for ($i=0;$i<=count($getFactura);$i++) {
-   //  echo $getFactura[$i]."<br>";
-   //  if ($i==count($getFactura)/2-1) {echo "</td><td>";}
-   //  }
 
-   //  echo "</tr></td>";
-    ?>
+   <div style="border: 1px solid black ;" class="cuadrodos">
+         
+         <div class="container">
+            <div class="col-xs-12 col-md-3">
+               {{-- <div class="cant_letrasdos" >{{$getQuedan->cant_letra}}</div> --}}
+               <div class="cant_letrasdos" >{{$NumConverted}}</div>
+               <div class="cant_numdos">$    {{ number_format($getQuedan->cant_num, 2) }}</div>
+         </div>
+      <br>
+      <br>
+      <br>
+      <div class="col-xs-12 col-md-3">
+         <div class="proveedordos">Proveedor: {{$getQuedan->nombre_proveedor}}</div>
+      </div>
+      <br>
+      <br>
 
-<!-- <div style="margin-top: -70px;">
-  
-   @foreach ($getFacturados as $item)
-    
-      <div >
-         <div  class="caja_inline" style="margin-left: 57%;">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
-            <div class="caja_inline" >{{$item->num_fac}}</div>
-            <div class="caja_inline">{{$item->monto}}</div>
+      <div class="col-xs-12 col-md-3">
+         <div class="fechados">{{date("d/m/Y", strtotime($getQuedan->fecha_emi))}}</div>
+         <div class="fuentedos">FUENTE DE FINANCIAMIENTO: {{$getQuedan->nombre_fuente}}</div>
       </div>
    
-
-    
-   @endforeach
-</div> -->
-
-
-<div style="border: 1px solid black ;" class="cuadrodos">
       
-<div class="container">
-         <div class="col-xs-12 col-md-3">
-            <div class="cant_letras" >{{$NumConverted}}</div>
-            <div class="cant_num">$    {{$getQuedan->cant_num}}</div>
-         </div>
-<br>
-<br>
-<br>
-<div class="col-xs-12 col-md-3">
-   <div class="proveedor">Proveedor: {{$getQuedan->nombre_proveedor}}</div>
-</div>
-<br>
-<br>
 
-<div class="col-xs-12 col-md-3">
-   <div class="fecha">{{date("d/m/Y", strtotime($getQuedan->fecha_emi))}}</div>
-   <div class="fuente">FUENTE DE FINANCIAMIENTO: {{$getQuedan->nombre_fuente}}</div>
-</div>
+   </div>
 
+   <div>
+      <div class="col-xs-12 col-md-3" style="border: 1px solid red; margin-top: -20px; " >
+                  <span class="caja_inline" style="margin-left: 5%;">FECHA FACTURA</span>
+                  <span class="caja_inline">NO. FACTURA</span>
+                  <span class="caja_inline">VALOR FACTURA</span>
+                  
+                  <span class="caja_inline" style="margin-left: 20%;">FECHA FACTURA</span>
+                  <span class="caja_inline">NO. FACTURA</span>
+                  <span class="caja_inline">VALOR FACTURA</span>
+      </div>
+    <br>
+   @php
+      $count = 0;
+   @endphp
+   @foreach ($getFactura as $item)
+   @break($count == 6)
 
-<div style="border: 1px solid green;" class="altura">
-
-         <div class="col-xs-12 col-md-3" style="border: 1px solid red;">
-            <span class="caja_inline" style="margin-left: 5%;">FECHA FACTURA</span>
-            {{-- <div class="caja_inline">FECHA RECEPCIÓN</div> --}}
-            <span class="caja_inline">NO. FACTURA</span>
-            <span class="caja_inline">VALOR FACTURA</span>
-            
-            <span class="caja_inline" style="margin-left: 20%;">FECHA FACTURA</span>
-            {{-- <div class="caja_inline">FECHA RECEPCIÓN</div> --}}
-            <span class="caja_inline">NO. FACTURA</span>
-            <span class="caja_inline">VALOR FACTURA</span>
-         </div>
- <br>
- @php
-   $count = 0;
- @endphp
- @foreach ($getFactura as $item)
- @break($count == 6)
-         <div class="col-xs-12 col-md-3" style="border: 1px solid blue;" class="wrapper"  >
-            
-             <div class="caja_inline" style="margin-left: 5%;">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
-            <div class="caja_inline">{{$item->num_fac}}</div>
-            <div class="caja_inline">{{$item->monto}}</div>
-         </div>
-         @php
-         $count++;
-         @endphp
-         @endforeach
-
-        
-
-    
-   <div style="clear:both"></div>
-</div>
+            <div class="col-xs-6 col-md-3" style="border: 1px solid blue; ">
+               <div class="caja_inline" style="margin-left: 5%;">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
+               <div class="caja_inline">{{$item->num_fac}}</div>
+               <div class="caja_inline">{{$item->monto}}</div>
+         
+            </div>
+           
+            @php
+            $count++;
+            @endphp
+            @endforeach
 
 
 
-</div>
 
+
+               <div style="border: 1px solid orange; margin-top:-107px; float:right ; width:100%;"  >
+
+                  @foreach ($getFacturados as $item)
+
+                     <div  >
+                        <div  class="caja_inline" style="margin-left: 57.5%;">{{date("d/m/Y", strtotime($item->fecha_fac))}}</div>
+                           <div class="caja_inline" >{{$item->num_fac}}</div>
+                           <div class="caja_inline">{{$item->monto}}</div>
+                     </div>
+
+
+
+                  @endforeach 
+
+               </div>
+   </div>
+
+  
 
 </body>
 
