@@ -33,10 +33,28 @@ data-backdrop="static" role="dialog"
 
 
 
-                <div>
-                    {{-- //todo div de búsqueda --}}
+                {{-- <div>
                     <input wire:model='keyWord' style="margin-top: 2%; width: 95%; margin-left: 2%" 
-                         type="text" class="form-control" name="search" id="search" placeholder="Buscar Facturas">
+                         type="text" class="form-control" name="search" 
+                         id="search" placeholder="Buscar Num Factura">
+                </div> --}}
+                <div class="row" style="90%">
+                    <div style="float:left; margin-top: 3%; width: 70%; margin-left: 10%;
+                                 inline: green solid thin; clear:both">
+                        <input wire:model='keyWord' type="text" class="form-control" name="search" id="search"
+                            {{-- placeholder="{{$filter}}"  --}}
+                            placeholder="Buscar Num Factura"
+                            style="width: 100%;height: 5ch">
+                    </div>
+
+                    <div >
+                        <button type="button" 
+                                  
+                                  style=" padding-right: 80%;  margin-top: 50%; border-radius: 15%; 
+                                            border-color: rgb(247, 247, 247)">
+                            <i style="color: rgb(144, 158, 168)" class="fa fa-filter"></i>
+                        </button>
+                    </div>
                 </div>
 
                 {{-- <input wire:model="permission_resource.{{$loop->index}}" 
@@ -86,11 +104,11 @@ data-backdrop="static" role="dialog"
                          {{-- @if($select_facturas->contains($selector_factura->id)) checked @endif --}}
                          {{-- @if(in_array($selector_factura->id,$ArrayCheckedF)) checked @endif --}}
                           >
-                          <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
-                          <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span>
+                          {{-- <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span> --}}
+                          {{-- <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span> --}}
                            <span class="ml-3 text-sm">Núm: {{ $selector_factura->num_fac }}</span>
                           <span class="ml-3 text-sm">Monto: {{ number_format($selector_factura->monto, 2) }}</span>
-                          {{-- <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span> --}}
+                          <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span>
                           {{-- //! <span class="ml-2 text-sm">Prov: {{ $selector_factura->nombre_proveedor }}</span> --}}
                           {{-- ID: {{$selector_factura->id }} 
                           • Núm: {{$selector_factura['num_fac'] }} 
@@ -163,7 +181,7 @@ data-backdrop="static" role="dialog"
                 @endif
                 <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary"
                     data-dismiss="modal">Cancelar</button>
-                <button type="button" wire:click.prevent="storeQF()" class="btn btn-primary"
+                <button type="button" wire:click.prevent="StoreDelete_QF()" class="btn btn-primary"
                     data-dismiss="modal">Guardar</button>
             </div>
         </div>

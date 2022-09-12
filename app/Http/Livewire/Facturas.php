@@ -26,6 +26,17 @@ class Facturas extends Component
 
     public $ottPlatform = '';
     public $prestaciones, $prestacionSelectedId;
+    public $filter = "Número de factura";
+    public $filterFecha = "Fecha";
+    public $SearchByProve = "Proveedor";
+    public $SearchByNum = "Número de factura";
+    
+    
+    
+   
+    public $paramfilter = 'num_fac';
+
+
 
     // public $endsOnDate;
 	public $reminder;
@@ -47,11 +58,33 @@ class Facturas extends Component
         $this->fecha_fac = $this->reminder->addYear();
     }
 
+
+    public function SearchByProve(){
+        $this->filter = $this->SearchByProve;
+        $this->paramfilter = 'proveedores.nombre_proveedor';
+    }
+
+    public function SearchByDate(){
+        $this->filter = $this->filterFecha;
+        $this->paramfilter = 'fecha_fac';
+    }
+    public function SearchByNumFac(){
+        $this->filter = $this->filter;
+        $this->paramfilter = 'num_fac';
+    }
+    
+
+    
+   
+
     public function render()
     {
         // $selectores = Proveedore::all();
         $selectores = Proveedore::select('id','nombre_proveedor')->orderBy('id', 'desc')
         ->whereNull('proveedores.hiden')->orWhere('proveedores.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
+        ->get();
+
+        $selectorFac = Factura::select('id','num_fac', 'fecha_fac')->orderBy('id', 'desc')
         ->get();
         
 		$this->dispatchBrowserEvent('contentChanged');
@@ -72,10 +105,10 @@ class Facturas extends Component
             // ->orWhere('num_fac', 'LIKE', $keyWord) //! ### descomentar
             // ->orWhere('monto', 'LIKE', $keyWord)
             // ->orWhere('proveedor_id', 'LIKE', $keyWord)
-            ->orWhere('proveedores.nombre_proveedor', 'LIKE', $keyWord)
+            ->orWhere($this->paramfilter, 'LIKE', $keyWord)
             ->whereNull('facturas.hiden')->orWhere('facturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
             ->paginate(10),
-        ], compact('selectores'));
+        ], compact('selectores','selectorFac'));
     }
 
     public function hidenstate($id_factura){ //* sirve para ocultar los registros en lugar de destruirlos

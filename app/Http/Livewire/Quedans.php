@@ -47,6 +47,7 @@ class Quedans extends Component
 	public $searchByFuent = "Buscar Fuente";
 	public $searchByProject = "Buscar Proyecto";
 	public $searchByProve = "Buscar Proveedor";
+	public $searchByQuedan = "Buscar num Quedan";
 	//
 	public $paramFilter = 'num_quedan';
 
@@ -77,6 +78,10 @@ class Quedans extends Component
        $this->filter = $this->searchByProve;
 	   $this->paramFilter = 'proveedores.nombre_proveedor';
 	}
+	public function SearchByQuedan(){
+		$this->filter = $this->searchByQuedan;
+		$this->paramFilter = 'num_quedan';
+	 }
 
 
 	public function mount()
@@ -238,9 +243,10 @@ class Quedans extends Component
 
 	}
 
-	public function storeQF(){ //StoreDelete_QF //! ############
+	//! ########
+	public function StoreDelete_QF()
+	{ // Es llamado al momento de guardar la lista de chequeo de facturas en 'associate.blade'
 
-		
 		$this->validate([
 			// 'factura_id' => 'required',
 			'quedan_id' => 'required',
@@ -260,23 +266,23 @@ class Quedans extends Component
 			       $factura_id = $MyFactIds;
 				// dd([$factura_id]);
 
-				//? Consultando el Id de factura para utilizarlo en la condición que indica si la asocación ya existe
-				// $id_Fact = Quedanfactura::select('factura_id',)
-				// //->where('quedan_id', $quedan_id) //* esto ya no, porque una factura sólo puede pertenercer a un quedan
-				//   ->where('factura_id', $factura_id)
-				//   ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where' // se ha comentado debido a queahora se consultará también por los registros desasociados, para volverlos a asociar,sin tener que duplicar registros
-				//   ->value('factura_id');
+				//? Consultando el Id de factura para utilizarlo en las condiciones de inserción y eliminación de quedanfacturas
+					// $id_Fact = Quedanfactura::select('factura_id',)
+						// //->where('quedan_id', $quedan_id) //* esto ya no, porque una factura sólo puede pertenercer a un quedan
+						//   ->where('factura_id', $factura_id)
+						//   ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where' // se ha comentado debido a queahora se consultará también por los registros desasociados, para volverlos a asociar,sin tener que duplicar registros
+						//   ->value('factura_id');
 
-				$Myfact = Quedanfactura::join('facturas', 'quedanfacturas.factura_id', '=', 'facturas.id')
+					$Myfact = Quedanfactura::join('facturas', 'quedanfacturas.factura_id', '=', 'facturas.id')
 				            ->select('quedanfacturas.hiden','quedanfacturas.factura_id','facturas.added', 'facturas.monto')
 						  //->where('quedan_id', $quedan_id) //* esto ya no, porque una factura sólo puede pertenecer a un quedan
 							->where('quedanfacturas.factura_id', $factura_id) 
 							->get();
-			// $factId_and_added = $Myfact->pluck('added','factura_id');
+				// $factId_and_added = $Myfact->pluck('added','factura_id');
 
 
-			// dd([$Myfact]); // ¿y cuando viene vacío? es porque no existe el registro de la factura en 'quedanfacturas
-			// dd([$factId_and_added]); //vacío significa que no existe el registro de la factura
+				// dd([$Myfact]); //* ¿Y cuando viene vacío? Es porque no existe el registro de la factura en 'quedanfacturas
+				// dd([$factId_and_added]); //* vacío significa que no existe el registro de la factura
 
 			switch ($checkState) { //todo: SWITCH: '$checkState' puede traer 0||1||true||false
 
@@ -345,8 +351,7 @@ class Quedans extends Component
 				break;
 
 				case false: //todo: ## delete ## (false, sin comillas simples, de lo contrario not working)
-					# code...
-					// dd('¿falso?', $checkState);
+					# dd('¿falso?', $checkState);
 					if ($Myfact == '[]') {
 						//? Si la factura no está insertada, Entones no hay nada que eliminar 
 						# dd('Eliminar es innecesario, pues No hay factura en quedanfacturas para este id', $MyFactIds);
@@ -403,8 +408,7 @@ class Quedans extends Component
 
 	}
 
-	public function storeQF2()
-	{
+	public function StoreDelete_QF2(){
 		// dd([$this->ArrayCheckedF]);
 		// dd([$this->ArrayUncheckedF]);
 
@@ -507,7 +511,7 @@ class Quedans extends Component
 	}
 
 	public function store()
-	{
+	{ // Se llama cuando se crea un quedan
 		$this->validate([
 			'num_quedan' => 'required',
 			'fecha_emi' => 'required',
@@ -535,7 +539,7 @@ class Quedans extends Component
 
 	 //! ########
 	public function editQF($quedan_id, $proveedor_id) 
-	{
+	{ // Es llamado cuando cuando se presiona el botón 'asociar', en view de quedan
 
 		// $this->dispatchBrowserEvent('contentChanged');
 		

@@ -4,7 +4,8 @@
 		<div class="col-md-12">
 			<div class="card">
 				<div class="card-header">
-					<div style="display: flex; justify-content: space-between; align-items: center;">
+					<div style="display: flex; justify-content: 
+					space-between; align-items: center;">
 						<div class="float-left">
 							<h4><i class="fab fa-laravel text-info"></i>
 							Facturas </h4>
@@ -16,9 +17,32 @@
 						@if (session()->has('message'))
 						<div wire:poll.4s class="btn btn-sm btn-success" style="margin-top:0px; margin-bottom:0px;"> {{ session('message') }} </div>
 						@endif
-						<div>
+
+						{{-- <div>
 							<input wire:model='keyWord' type="text" class="form-control" name="search" id="search" placeholder="Buscar Facturas">
+						</div> --}}
+						<div class="row">
+							<div style="float:left;width: 75%;
+										 inline: green solid thin; clear:both">
+								<input wire:model='keyWord' type="text" class="form-control" name="search" id="search"
+									placeholder="{{$filter}}" style="width: 100%;height: 5ch">
+							</div>
+						
+							<div class="btn-group">
+								<button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" 
+										  aria-haspopup="true" aria-expanded="false" style=" border-block-end-color: rgb(97, 129, 118);border-block-color: rgb(185, 193, 197)">
+									<i style="color: rgb(144, 158, 168)" class="fa fa-filter"></i>
+								</button>
+								<div class="dropdown-menu dropdown-menu-right">
+								
+								<!-- <a class="dropdown-item" wire:click="SearchByDate()"><i style="color: rgb(178, 191, 199)" class="far fa-calendar-alt"></i>  Filtrar por Fecha </a>							  -->
+								<a class="dropdown-item" wire:click="SearchByNumFac()"><i style="color: rgb(178, 191, 199)" class="fas fa-money-bill-wave"></i> Filtrar por N° de Factura </a>							 
+								<a  class="dropdown-item" wire:click="SearchByDate()"><i style="color: rgb(178, 191, 199)" class="fas fa-project-diagram"></i> Filtrar por Fecha </a>							 
+								<a class="dropdown-item" wire:click="SearchByProve()"><i style="color: rgb(178, 191, 199)" class="fas fa-hands-helping"></i> Filtrar por Proveedor  </a>   
+								</div>
+							</div>
 						</div>
+
 						<div class="btn btn-sm btn-info" data-toggle="modal" data-target="#createDataModal">
 						<i class="fa fa-plus"></i>  Añadir Facturas
 						</div>
@@ -74,3 +98,7 @@
 		</div>
 	</div>
 </div>
+
+
+
+

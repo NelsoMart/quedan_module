@@ -33,11 +33,13 @@
 
 							<div class="btn-group">
 								<button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" 
-								          aria-haspopup="true" aria-expanded="false" style=" border-block-end-color: rgb(97, 129, 118);border-block-color: rgb(185, 193, 197)">
+								          aria-haspopup="true" aria-expanded="false" 
+										  style=" border-block-end-color: rgb(97, 129, 118);border-block-color: rgb(185, 193, 197)">
 									<i style="color: rgb(144, 158, 168)" class="fa fa-filter"></i>
 								</button>
 								<div class="dropdown-menu dropdown-menu-right">
 								{{-- <a  class="dropdown-item" href="{{url('quedans/pdf')}}"><i class="fa fa-print"></i> Imprimir </a>							  --}}
+								<a class="dropdown-item" wire:click="SearchByQuedan()"><i style="color: rgb(178, 191, 199)" class="far fa-calendar-alt"></i>  Filtrar por Número de Quedan </a>
 								<a class="dropdown-item" wire:click="SearchByDate()"><i style="color: rgb(178, 191, 199)" class="far fa-calendar-alt"></i>  Filtrar por Fecha </a>							 
 								<a class="dropdown-item" wire:click="SearchByFuent()"><i style="color: rgb(178, 191, 199)" class="fas fa-money-bill-wave"></i> Filtrar por Fuente de Financiamiento </a>							 
 								<a  class="dropdown-item" wire:click="SearchByProject()"><i style="color: rgb(178, 191, 199)" class="fas fa-project-diagram"></i> Filtrar por Proyecto </a>							 
