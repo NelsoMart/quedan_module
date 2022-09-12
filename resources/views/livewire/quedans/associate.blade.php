@@ -47,12 +47,12 @@ data-backdrop="static" role="dialog"
                             style="width: 100%;height: 5ch">
                     </div>
 
-                    <div >
+                    <div style="margin-top: 3%">
                         <button type="button" 
                                   
-                                  style=" padding-right: 80%;  margin-top: 50%; border-radius: 15%; 
+                                  style=" background-color: white; padding: 28%; border-radius: 15%; 
                                             border-color: rgb(247, 247, 247)">
-                            <i style="color: rgb(144, 158, 168)" class="fa fa-filter"></i>
+                            <i style="color: rgb(144, 158, 168)" class="fa fa-search"></i>
                         </button>
                     </div>
                 </div>
