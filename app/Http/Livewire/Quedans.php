@@ -559,6 +559,8 @@ class Quedans extends Component
 
 	public function store()
 	{ // Se llama cuando se crea un quedan
+		dd('numq',$this->num_quedan,'fechae',$this->fecha_emi,'cantNu',$this->cant_num,
+	       'fuente',$this->fuente_id,'proj',$this->proyecto_id,'prov',$this->proveedor_id );
 		$this->validate([
 			'num_quedan' => 'required',
 			'fecha_emi' => 'required',

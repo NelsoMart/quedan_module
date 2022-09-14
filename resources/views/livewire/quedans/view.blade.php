@@ -78,13 +78,13 @@
 							<tr> 
 								{{-- <td>#</td>  --}}
 								{{-- <th style="width: 4%">ID</th> --}}
-								<th style="width: 10%">Num Quedan</th>
-								<th style="width: 15%">Fecha Emi</th>
-								<th style="width: 9%">Cantidad Número</th>
+								<th style="width: 10%">Nums Quedan</th>
+								<th style="width: 15%">Fechas Emis</th>
+								<th style="width: 9%">Cantidades</th>
 								{{-- <th style="width: 35%">Cantidad Letra</th> --}}
-								<th style="width: 20%">Fuente</th>
-								<th>Proyecto</th>
-								<th>Proveedor</th>
+								<th style="width: 20%">Fuentes</th>
+								<th>Proyectos</th>
+								<th>Proveedores</th>
 								<td>ACCIONES</td>
 							</tr>
 						</thead>
