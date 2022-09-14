@@ -41,16 +41,18 @@ data-backdrop="static" role="dialog"
                 <div class="row" style="90%">
                     <div style="float:left; margin-top: 3%; width: 70%; margin-left: 10%;
                                  inline: green solid thin; clear:both">
-                        <input wire:model='keyWord' type="text" class="form-control" name="search" id="search"
+                        <input wire:model.debounce.500ms='select_facturas' type="text" 
+                                class="form-control" name="search2" id="search2"
                             {{-- placeholder="{{$filter}}"  --}}
                             placeholder="Buscar Num Factura"
                             style="width: 100%;height: 5ch">
                     </div>
 
-                    <div style="margin-top: 3%">
+                    <div style="margin-top: 3.1%">
                         <button type="button" 
-                                  
-                                  style=" background-color: white; padding: 28%; border-radius: 15%; 
+                                  wire:click=''
+                                  style=" background-color: white; padding: 35%;width: 185%; 
+                                             border-radius: 15%; 
                                             border-color: rgb(247, 247, 247)">
                             <i style="color: rgb(144, 158, 168)" class="fa fa-search"></i>
                         </button>
@@ -68,7 +70,7 @@ data-backdrop="static" role="dialog"
                     {{-- <span class="ml-3 text-sm">Proveedor: Tal</span> --}}
                     @foreach ($select_facturas as $index => $selector_factura)
                     <div class="mt-3" style="margin-bottom: 3%; 
-                    margin-top: 4%; margin-left: 4%">
+                                margin-top: 4%; margin-left: 4%">
                     <input type="checkbox" class="form-checkbox"
                     {{-- name="ArrayCheckedF[]"  --}}
                     {{-- wire:mouseover='hola' --}}
