@@ -17,7 +17,15 @@ data-backdrop="static" role="dialog"
                       width: 100%;
                     }
                   </style>
-                <h5 class="modal-title" wire:model="quedan_id" id="associateModalLabel">Asociar Facturas al Quedan </h5>
+                  <div class="row" style="margin-top: 2%; width: 95%; margin-left: 2%">
+                    {{-- <h5 class="modal-title" >Asociar Facturas del Proveedor {{$NomProvForAssocModal}} al Quedan {{$NumQForAssocModal}}</h5> --}}
+                    <h5 class="ml-2 text-sm" style="color: rgb(48, 45, 45)">Asociar Facturas del Proveedor:</h5>
+                    <h5 class="ml-2 text-sm" style="color: rgb(110, 116, 119)">{{$NomProvForAssocModal}}</h5>
+                    <h5 class="ml-2 text-sm" style="color: rgb(48, 45, 45)">al Quedan:</h5>
+                    <h5 class="ml-2 text-sm" style="color: rgb(110, 116, 119)"> Nº {{$NumQForAssocModal}}</h5>
+
+                  </div>
+                {{-- <h5 class="modal-title" id="associateModalLabel">Asociar Facturas del Proveedor {{$NomProvForAssocModal}} al Quedan {{$NumQForAssocModal}}</h5> --}}
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span wire:click.prevent="cancel()" aria-hidden="true">×</span>
                 </button>
@@ -41,7 +49,13 @@ data-backdrop="static" role="dialog"
                 <div class="row" style="90%">
                     <div style="float:left; margin-top: 3%; width: 70%; margin-left: 10%;
                                  inline: green solid thin; clear:both">
-                        <input wire:model.debounce.500ms='select_facturas' type="text" 
+                        <input id="inputsearch"
+                              wire:model='keyWordCheck'
+                              {{-- wire:change="editQFSearch()" --}}
+                              {{-- wire:model.lazy="select_facturas" --}}
+                               {{-- wire:model.debounce.500ms='select_facturas'  --}}
+                               {{-- wire:model.debounce.50ms='editQFSearch()'  --}}
+                                type="number" 
                                 class="form-control" name="search2" id="search2"
                             {{-- placeholder="{{$filter}}"  --}}
                             placeholder="Buscar Num Factura"
@@ -50,7 +64,7 @@ data-backdrop="static" role="dialog"
 
                     <div style="margin-top: 3.1%">
                         <button type="button" 
-                                  wire:click=''
+                                  wire:click.prevent="editQFSearch()"
                                   style=" background-color: white; padding: 35%;width: 185%; 
                                              border-radius: 15%; 
                                             border-color: rgb(247, 247, 247)">
@@ -106,11 +120,12 @@ data-backdrop="static" role="dialog"
                          {{-- @if($select_facturas->contains($selector_factura->id)) checked @endif --}}
                          {{-- @if(in_array($selector_factura->id,$ArrayCheckedF)) checked @endif --}}
                           >
-                          {{-- <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span> --}}
-                          {{-- <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span> --}}
+                          <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
+                          <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span>
                            <span class="ml-3 text-sm">Núm: {{ $selector_factura->num_fac }}</span>
                           <span class="ml-3 text-sm">Monto: {{ number_format($selector_factura->monto, 2) }}</span>
-                          <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span>
+                          {{-- <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span> --}}
+                          {{-- <span class="ml-3 text-sm">Prov: {{ $selector_factura->nombre_proveedor }}</span> --}}
                           {{-- //! <span class="ml-2 text-sm">Prov: {{ $selector_factura->nombre_proveedor }}</span> --}}
                           {{-- ID: {{$selector_factura->id }} 
                           • Núm: {{$selector_factura['num_fac'] }} 
@@ -120,6 +135,13 @@ data-backdrop="static" role="dialog"
                     </div>
                    @endforeach                  
             </div>  
+
+            <script>
+                $('#inputsearch').on('change', function(e) {
+                    @this.editQFSearch();
+                    // alert('foo');
+                })
+            </script>
 
             {{-- <script>
                 $('#associateModal').show('show', function() { // coloca el número de quedan automáticamente

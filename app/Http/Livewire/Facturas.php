@@ -18,7 +18,7 @@ class Facturas extends Component
     use WithPagination;
 
 	protected $paginationTheme = 'bootstrap';
-    public $selected_id, $keyWord, $fecha_fac, $num_fac, $monto, $proveedor_id, $hiden;
+    public $selected_id, $keyWord, $fecha_fac, $num_fac, $monto, $proveedor_id, $hiden, $added=0; //added debe ser 0 por default
 
     protected $listeners = ['refreshData' => 'cleanData']; //? by me 
 
@@ -113,13 +113,15 @@ class Facturas extends Component
 
     public function hidenstate($id_factura){ //* sirve para ocultar los registros en lugar de destruirlos
 
-		//* ocultamos la factura en cuestión
+		//* ocultamos la factura en cuestión y reseteamos el idquedan añadido
 		$ocultarF = Factura::find($id_factura);
-		$ocultarF -> update(['hiden' => 1,]);
+		$ocultarF -> update(['hiden' => 1, 'added'=> 0]);
 
-		//* ocultamos también el Quedanfactura relacionado con esta factura
-		$ocultarQF = Quedanfactura::select('id')->where('factura_id', $id_factura);
-		$ocultarQF -> update(['hiden' => 1,]);
+        //? ocultamos el Quedanfactura relacionado con esta factura. Ojo, si se fuera a ELIMINAR, esto debe ser después de actualizar el monto en Quedan 
+        $ocultarQF = Quedanfactura::select('id')->where('factura_id', $id_factura);
+        $ocultarQF -> update(['hiden' => 1,]);
+        // $eliminarQF = Quedanfactura::select('id')->where('factura_id', $id_factura);
+        // $eliminarQF->delete();
 
       //*? ------ Un proceso más para actualizar el valor numérico en Quedan -------
         //* obtenemos quedan_id  "extrayéndolo" de la tabla Quedanfacturas
@@ -135,7 +137,7 @@ class Facturas extends Component
         //* decrementamos  la cantidad_num del quedan, tras ocultar la factura que había probocado su incremento
         $record2 = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
         $record2->decrement('cant_num', $montofact); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
-    //? --------------------------------------------------------
+    //? -----------------------------------------------------------------------------
 
 		session()->flash('message', 'Registro eliminado');
 	}
@@ -152,6 +154,7 @@ class Facturas extends Component
 		$this->num_fac = null;
 		$this->monto = null;
 		$this->proveedor_id = null;
+		$this->added = 0;
 
 		$this->mount();
 
@@ -181,7 +184,8 @@ class Facturas extends Component
 			'fecha_fac' => $this-> fecha_fac,
 			'num_fac' => $this-> num_fac,
 			'monto' => $this-> monto,
-			'proveedor_id' => $this-> proveedor_id
+			'proveedor_id' => $this-> proveedor_id,
+			'added' => 0 // added debe ser 0 por defecto
         ]);
 
 
@@ -212,6 +216,14 @@ class Facturas extends Component
 
     public function update()
     {
+
+        // Si se quiere actualizar el monto, y éste está "sumado" en el valor de algún quedan
+        // se debe crear una variable tipo $old_monto, para guardar el monto actual, y hacer un proceso
+        //donde primero se decremente en tal quedan el antiguo monto y luego se incremente con el nuevo monto.
+        //Se puede hacer a través de una comparación de montos, donde si son igulaes, que el proceso continue como antes,
+        // de lo contrario hacer el nuevo proceso.
+        // // Se debe tener cuidado que a $old_monto sólo se le asigne una vez de modo que no debe tomar el valor
+        // // de la variable antigua, sino hacer una consulta
         $this->validate([
 		'fecha_fac' => 'required',
 		'num_fac' => 'required',

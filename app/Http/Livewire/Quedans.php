@@ -32,7 +32,7 @@ class Quedans extends Component
 	// public $quedan_id, $ArrayCheckedF = ['id'=>0, 'added'=>''], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 
 
-	public $select_facturas;
+	public $select_facturas, $NumQForAssocModal, $NomProvForAssocModal;
 
 	// public $vendor_permissions = [1,2,3,4], $assigned_vendor_permissions = [1,3];
 
@@ -119,13 +119,19 @@ class Quedans extends Component
 			// 	->orderBy('num_fac', 'desc')->get();
 
 			// $select_fuentes = Fuente::all();
-			$select_fuentes = Fuente::select('id','nombre_fuente')->orderBy('id', 'desc')->get();
+			$select_fuentes = Fuente::select('id','nombre_fuente')
+			->whereNull('fuentes.hiden')->orWhere('fuentes.hiden', '=', 0) //? Esta línea es un 'where or where'
+			->orderBy('id', 'desc')->get();
 
 			// $select_proyectos = Proyecto::all();
-			$select_proyectos = Proyecto::select('id','nombre_proyecto')->orderBy('id', 'desc')->get();
+			$select_proyectos = Proyecto::select('id','nombre_proyecto')
+			->whereNull('proyectos.hiden')->orWhere('proyectos.hiden', '=', 0) //? Esta línea es un 'where or where'
+			->orderBy('id', 'desc')->get();
 
 			// $select_proyectos = Proyecto::all();
-			$select_proveedores = Proveedore::select('id','nombre_proveedor')->orderBy('id', 'desc')->get();
+			$select_proveedores = Proveedore::select('id','nombre_proveedor')
+			->whereNull('proveedores.hiden')->orWhere('proveedores.hiden', '=', 0) //? Esta línea es un 'where or where'
+			->orderBy('id', 'desc')->get();
 
 		$this->dispatchBrowserEvent('contentChanged');
 
@@ -192,7 +198,7 @@ class Quedans extends Component
 	}
 
 	public function functionNumQd()
-	{ //* función para obtener el número de quedan
+	{ //* función para obtener el número de quedan, obtiene el más reciente agregado
 		$this->num_quedan = Quedan::select('num_quedan')->orderBy('id', 'desc')->value('num_quedan');
 		return $this->num_quedan += 1;
 	}
@@ -231,11 +237,15 @@ class Quedans extends Component
 	{
 		// $this->num_quedan = null;
 		// $this->fecha_emi = null;
-		$this->cant_num = null;
-		$this->cant_letra = null;
+		// $this->cant_num = null;
+		$this->cant_num = 0;
+		$this->cant_letra = '*SIN ASIGNAR*';
 		$this->fuente_id = null;
 		$this->proyecto_id = null;
 		$this->select_facturas = null;
+		$this->keyWordCheck = null; // used in associatemodal to search filter
+		$this->NomProvForAssocModal = null;
+		$this->NumQForAssocModal = null;
 		$this->functionNumQd();
 	}
 
@@ -444,14 +454,22 @@ class Quedans extends Component
 			'quedan_id' => 'required',
 			]);
 			
-			// dd([$this->ArrayCheckedF]);
+			# dd([$this->ArrayCheckedF]);
 
 
 			foreach ($this->ArrayCheckedF as $MyFactIds => $checkState) {
 
 				//? $checkState get a boolean value
 				//? $MyFactIds get id
-				    // dd($MyFactIds, $checkState);
+
+				// $checkState = $check;
+				// $checkState = $check.'value';
+
+				// $checkState = ($check=='true') ? true : b ;
+
+				// $checkState = strval($check);
+				
+				# dd('Id fact:',$MyFactIds, 'check state:',$checkState);
 
 		    	// $retVal = (condition) ? a : b ;
 		    	// $factura_id = strval($MyFactIds); //* strval convierte a string cualquier valor
@@ -471,16 +489,30 @@ class Quedans extends Component
 						  //->where('quedan_id', $quedan_id) //* esto ya no, porque una factura sólo puede pertenecer a un quedan
 							->where('quedanfacturas.factura_id', $factura_id) 
 							->get();
+							//! No se consulta si está oculto o no, porque eso se maneja desde la consulta de facturas, como ahí se oculta, ese $factura_id oculto jamás se filtrará aquí.
 				// $factId_and_added = $Myfact->pluck('added','factura_id');
 
 
-				// dd([$Myfact]); //* ¿Y cuando viene vacío? Es porque no existe el registro de la factura en 'quedanfacturas
-				// dd([$factId_and_added]); //* vacío significa que no existe el registro de la factura
+				# dd([$Myfact]); //* ¿Y cuando viene vacío? Es porque no existe el registro de la factura en 'quedanfacturas
+				# dd([$factId_and_added]); //* vacío significa que no existe el registro de la factura
 
 			switch ($checkState) { //todo: SWITCH: '$checkState' puede traer 0||1||true||false
+				//! SI quedan_id ES 1 checkState SERÁ true, si se marca; y cero (default), si no se marca. checkState jamás será 1, aunque 1 equivalga a true y viceversa. OJO
+				//! Por lo tanto no habrá conflictos en el switch al venir un registro con quedan_id=1
 
-				case 'true': //todo: ## insert ## (con comillas simples, porque si no, se confunde con el estado 1)
-					# dd('¿verdadero?', $checkState);
+				//! ############## ver lo de hiden ###########
+				
+				// case '1':
+				// 	# code...
+				// 	dd('¿Uno?', $checkState);
+				// 	break;
+				// case '0':
+				// 	# code...
+				// 	dd('¿Cero?', $checkState);
+				// 	break;
+
+				case true: //todo: ## insert ## (con comillas simples, porque si no, se confunde con el estado 1)
+					  #  dd('¿verdadero?', $checkState);
 					if ($Myfact == '[]') {
 						//? Si la factura no está insertada, será un registro NUEVO en quedanfacturas
 						#  dd('No hay factura en quedanfacturas para este id', $MyFactIds);
@@ -489,9 +521,9 @@ class Quedans extends Component
 								'factura_id' => $factura_id,
 								'quedan_id' => $this->quedan_id
 							]);
-						//? Actualizamos el estado added de la factura a 1 para indicar que ya fue asociada
+						//? Actualizamos el estado added de la factura metiéndole el quedan_id para indicar que ya fue asociada con ese quedan
 							$updateAddedfactState = Factura::select('id')->where('id', $factura_id);
-							$updateAddedfactState -> update(['added' => 1,]);
+							$updateAddedfactState -> update(['added' => $this->quedan_id,]);
 
 						//? Obteniendo el monto de la factura igual a la factura que se pretende insertar
 							$montofact = Factura::select('monto') 
@@ -502,13 +534,15 @@ class Quedans extends Component
 							$sumvalue->increment('cant_num', $montofact);
 						    	
 					} else {
-						// dd('Ya hay factura en quedanfacturas para este id', $MyFactIds);
+						# dd('Ya hay factura en quedanfacturas para este id', $MyFactIds);
 						// return null;
 					}
 				break;
 
 				case false: //todo: ## delete ## (false, sin comillas simples, de lo contrario not working)
-					# dd('¿falso?', $checkState);
+					//! Cuando  $checkState traiga 0 (valor por default, es decir casilla no marcada), pasará por false, 
+					//!pero $Myfact en ese caso estará vacío y por lo tanto no se ejecutará ninguna acción
+					//  dd('¿falso?', $checkState);
 					if ($Myfact == '[]') {
 						//? Si la factura no está insertada, Entones no hay nada que eliminar 
 						//  dd('Eliminar es innecesario, pues No hay factura en quedanfacturas para este id', $MyFactIds);
@@ -516,7 +550,7 @@ class Quedans extends Component
 					} else {
 						foreach ($Myfact as $MyFactura) {
 							//todo-------------------------------------------------------------------------------
-									 //? Se actualiza el estado de 'hiden' a 1 en quedanfacturas de la factura chequeada
+								//? Se actualiza el estado de 'hiden' a 1 en quedanfacturas de la factura chequeada
 									//  $ocultarQF = Quedanfactura::select('id')->where('factura_id', $factura_id);
 									//  $ocultarQF -> update(['hiden' => 1,]);
 
@@ -537,14 +571,19 @@ class Quedans extends Component
 									 $TotalValue = Quedan::find($MyFactura->quedan_id); 
 								  // $TotalValue = Quedan::find($this->quedan_id); 
 									 $TotalValue->decrement('cant_num', $montofact);
-								 //todo-------------------------------------------------------------------------------
+							//todo-------------------------------------------------------------------------------
 						}
 					}
 				break;
 
 				case 1: // Es como el default, pero lo dejamos para efectos de prueba
 					# code...
-					//  dd('trae 1?', $checkState);  // ;)
+					//  dd('es 1?', $checkState);  // ;)
+					break;
+
+				case 0: // Es como el default, pero lo dejamos para efectos de prueba
+					# code...
+					//  dd('es 0?', $checkState);  // ;)
 					break;
 
 				default:
@@ -553,13 +592,14 @@ class Quedans extends Component
 			}
 		}
 		session()->flash('message4', 'Proceso realizado');
-
+		$this->resetInput();
 	}
 
 
 	public function store()
 	{ // Se llama cuando se crea un quedan
 		// dd('numq',$this->num_quedan,'fechae',$this->fecha_emi,'cantNu',$this->cant_num,
+		//   'cantLet',$this->cant_letra,
 	    //    'fuente',$this->fuente_id,'proj',$this->proyecto_id,'prov',$this->proveedor_id );
 		$this->validate([
 			'num_quedan' => 'required',
@@ -586,39 +626,49 @@ class Quedans extends Component
 		session()->flash('message', 'Quedan creado satisfactoriamente.');
 	}
 
-	
 	 //! ########
+	 
 	public function editQF($quedan_id, $proveedor_id) 
-	{ //* Es llamado cuando cuando se presiona el botón 'asociar', en view de quedan
+	{ //* Es llamado cuando se presiona el botón 'asociar', en view de quedan
 		
-		$keyWord = '%' . $this->keyWordCheck . '%';
 		// $this->dispatchBrowserEvent('contentChanged');
-		
-		// $this->select_facturas = Factura::all();
 
-		// $this->select_facturas = Factura::select('id','fecha_fac','num_fac','monto','proveedor_id')
-		// 	->where('proveedor_id', '=', $proveedor_id)
-		// 	->orderBy('id', 'desc')->get();
+		//*--------------- Para header info y search filter de associatemodal ----------------
+		//? Se obtiene el número de quedan,
+		$this->NumQForAssocModal = Quedan::select('num_quedan')
+		->where('id', $quedan_id)
+		->value('num_quedan');
+		// return $this->NumQForAssocModal; // no descomentar
 
-		
+		//? Se obtiene el nombre del proveedor
+		$this->NomProvForAssocModal = Proveedore::select('nombre_proveedor')
+		->where('id', $proveedor_id)
+		->value('nombre_proveedor');
+		// return $this->NomProvForAssocModal; // no descomentar
+		//* ---------------------------------------------------------------------------------------
+
 
 		// return view('livewire.quedans.view', [
 			$this->select_facturas = Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
 				->select('facturas.id','fecha_fac','num_fac','monto','nombre_proveedor','proveedor_id AS my_provId', 'added')
 				->where('proveedor_id', '=', $proveedor_id)
-				//? mejor que muestre todas las facturas, no solo las que no han sido añadidas.
-				// ->whereNull('facturas.added')->orWhere('facturas.added', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
-				// ->orWhere('num_fac', 'LIKE', $keyWord)
+				->whereIn('added', [ 0, $quedan_id ])
+				// ->whereNotBetween('facturas.hiden', [1, 2])
+				//? Es importante mostrar sólo facturas visibles.
+				->where(function ($query) {
+					$query->whereNull('facturas.hiden')
+						  ->orWhere('facturas.hiden', '=', 0);
+				})
 				->orderBy('num_fac', 'desc')->get();
 
 			//* --------------------------- Precargando ArrayCheckedF --------------------
-				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array se vuelve gigantesco;
-				// $this->ArrayCheckedF = $this->select_facturas->pluck('added','id');
+				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array puede crecer;
+				$this->ArrayCheckedF = $this->select_facturas->pluck('added','id');
 
 				//? Bajo esta forma se crea un array que obtiene SÓLO los ids con added=1 reduciendo considerablemente el tamaño del array; pero esto implica hacer otra consulta a la base de datos.
-				$Misfacturas = Factura::select('id','added')
-				->where('added', '=', 1)->get();
-				$this->ArrayCheckedF = $Misfacturas->pluck('added','id');
+				// $Misfacturas = Factura::select('id','added')
+				// ->where('added', '=', 1)->get();
+				// $this->ArrayCheckedF = $Misfacturas->pluck('added','id');
 			//* --------------------------------------------------------------------------
 			
 
@@ -635,10 +685,55 @@ class Quedans extends Component
 
 		// dd($this->select_facturas);
 
-
-          // estas asignaciones son cruciales
+          //! Estas asignaciones son cruciales
 		$this->quedan_id = $quedan_id;
 		$this->proveedor_id = $proveedor_id;
+	}
+
+	public function editQFSearch() 
+	{ //* Es llamado cuando cuando se presiona el botón de 'search', en el cuadro de búsqueda del model checklist
+		// dd('hey!');
+		// $keyWord = '%' . $this->keyWordCheck . '%';
+		// dd($keyWord);
+             $kchecked = $this->keyWordCheck ;
+
+		if ($kchecked != null) {
+			// dd('trae algo', $kchecked);
+			$this->select_facturas = Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
+			->select('facturas.id', 'fecha_fac', 'num_fac', 'monto', 'nombre_proveedor', 'proveedor_id AS my_provId', 'added')
+			->where('proveedor_id', '=', $this->proveedor_id)
+			->Where('num_fac', '=', $this->keyWordCheck)
+			->whereIn('added', [0, $this->quedan_id])
+				//? Es importante mostrar sólo facturas visibles.
+				->where(function ($query) {
+					$query->whereNull('facturas.hiden')
+					->orWhere('facturas.hiden', '=', 0);
+				})
+				// ->whereNull('facturas.hiden')->orWhere('facturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
+				->orderBy('num_fac', 'desc')->get();
+			} else {
+				// dd('no trae nada', $kchecked);
+				$this->select_facturas = Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
+				->select('facturas.id', 'fecha_fac', 'num_fac', 'monto', 'nombre_proveedor', 'proveedor_id AS my_provId', 'added')
+				->where('proveedor_id', '=', $this->proveedor_id)
+				// ->Where('num_fac', '=', $this->keyWordCheck)
+				->whereIn('added', [0, $this->quedan_id])
+					//? Es importante mostrar sólo facturas visibles.
+					->where(function ($query) {
+						$query->whereNull('facturas.hiden')
+						->orWhere('facturas.hiden', '=', 0);
+					})
+					// ->whereNull('facturas.hiden')->orWhere('facturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
+					->orderBy('num_fac', 'desc')->get();
+			}
+
+			//* --------------------------- Precargando ArrayCheckedF --------------------
+				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array puede crecer;
+				$this->ArrayCheckedF = $this->select_facturas->pluck('added','id');
+
+				//? Bajo esta forma se crea un array que obtiene SÓLO los ids con added=1 reduciendo considerablemente el tamaño del array; pero esto implica hacer otra consulta a la base de datos.
+
+			//* --------------------------------------------------------------------------
 	}
 
 	public function edit($id, $proveedor_id)
