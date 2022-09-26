@@ -40,7 +40,7 @@ class Proveedores extends Component
         $ocultarF->update(['hiden' => 1, 'added'=> 0]);
 
         //! ################
-        //! un nuevo enfoque:  OCULTAR EL O LOS QUEDAN RELACIONADOS; NO DEJARLOS VISIBLES Y LIMPIOS (decrementado montos de facturas solamente)
+        //! un nuevo enfoque:  OCULTAR EL O LOS QUEDAN RELACIONADOS; EN LUGAR DE DEJARLOS VISIBLES Y LIMPIOS (decrementado montos de facturas solamente)
 
         //? Se hace una búsqueda que retornará una o VARIAS facturas relacionadas con el mismo proveedor
         $gettingIdsFacts = Factura::select('id')->where('proveedor_id', $id_proveedor)->get();
@@ -73,10 +73,9 @@ class Proveedores extends Component
                 // $record2 = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
                 // $record2->decrement('cant_num', $montofact); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
 
-            //? Ocultando el o los Quedans relacionados con el proveedor a ocultar
-                $hidenQuedan = Quedan::select('id')->where('id', $MyIDQdn);
-                $hidenQuedan->update(['hiden' => 1,]);
-            //! Nota: Eliminar un proveedor implicará que la cantidad en número en un Quedan sea inmediatamente cero
+            //? Ocultando el o los Quedans que tienen que ver con (las facturas de) el proveedor a ocultar
+                $hidingQuedan = Quedan::select('id')->where('id', $MyIDQdn);
+                $hidingQuedan->update(['hiden' => 1,]);
             //? --------------------------------------------------------
 
         }

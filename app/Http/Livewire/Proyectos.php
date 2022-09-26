@@ -5,6 +5,9 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Proyecto;
+use App\Models\Quedan;
+use App\Models\Factura;
+use App\Models\Quedanfactura;
 
 class Proyectos extends Component
 {
@@ -20,10 +23,55 @@ class Proyectos extends Component
         return view('livewire.proyectos.view', [
             'proyectos' => Proyecto::latest()
 						->orWhere('nombre_proyecto', 'LIKE', $keyWord)
+                        ->whereNull('proyectos.hiden')->orWhere('proyectos.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
 						->paginate(10),
         ]);
     }
 	
+    public function hidenstate($id_proyecto)
+    { //* sirve para ocultar los registros en lugar de destruirlos
+
+        //* ocultamos el proyecto en cuestión
+        $ocultarP = Proyecto::find($id_proyecto);
+        $ocultarP->update(['hiden' => 1,]);
+
+        //* también ocultamos el o los quedans relacionadas con este proyecto
+        $ocultarF = Quedan::select('id')->where('proyecto_id', $id_proyecto);
+        $ocultarF->update(['hiden' => 1,]);
+
+        //? Se hace una búsqueda que retornará uno o VARIOS quedans relacionados con el mismo proyecto
+        $gettingIdsQdns = Quedan::select('id')->where('proyecto_id', $id_proyecto)->get();
+
+        //? Se recorre $gettingIdsQdns por si no trae uno sino varios registros relacionados
+        foreach ($gettingIdsQdns as $MyQdnIds) {
+
+            //? Se oculta también el o los Quedanfacturas relacionados con cada quedan
+            $ocultarQF = Quedanfactura::select('id')->where('quedan_id', $MyQdnIds->id);
+            $ocultarQF->update(['hiden' => 1,]);
+
+
+            //*? ------ Un proceso más para ocultar facturas  ------
+            //! tras "eliminar" un proyecto y un quedan (donde el proyecto
+            //! haya sido añadido), TODAS las facturas
+            //! que se hayan "relacionado" con el quedan también se ocultarán.
+
+            //* Obteniendo factura_id  "extrayéndolo" de la tabla Quedanfacturas
+                $MyIDFact = Quedanfactura::select('factura_id')
+                ->where('quedan_id', $MyQdnIds->id)->value('factura_id');
+
+            //? Ocultando la o las Facturas que tienen que ver con (los quedans de) el proyecto a ocultar
+            //! es posible no ocultar las facturas sin que haya conflictos, debido a que
+            //! las facturas no se muestran una vez son "relacionadas" con un quedan.
+            //! Y es mejor así para no inhibir un proceso inverso.
+                $hidingFact = Factura::select('id')->where('id', $MyIDFact);
+                $hidingFact->update(['hiden' => 1,]);
+            //? --------------------------------------------------------
+
+        }
+
+        session()->flash('message', 'Registro eliminado');
+    }
+
     public function cancel()
     {
         $this->resetInput();
