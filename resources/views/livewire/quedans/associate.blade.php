@@ -120,11 +120,11 @@ data-backdrop="static" role="dialog"
                          {{-- @if($select_facturas->contains($selector_factura->id)) checked @endif --}}
                          {{-- @if(in_array($selector_factura->id,$ArrayCheckedF)) checked @endif --}}
                           >
-                          <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
-                          <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span>
+                          {{-- <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span> --}}
+                          {{-- <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span> --}}
                            <span class="ml-3 text-sm">Núm: {{ $selector_factura->num_fac }}</span>
                           <span class="ml-3 text-sm">Monto: {{ number_format($selector_factura->monto, 2) }}</span>
-                          {{-- <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span> --}}
+                          <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span>
                           {{-- <span class="ml-3 text-sm">Prov: {{ $selector_factura->nombre_proveedor }}</span> --}}
                           {{-- //! <span class="ml-2 text-sm">Prov: {{ $selector_factura->nombre_proveedor }}</span> --}}
                           {{-- ID: {{$selector_factura->id }} 

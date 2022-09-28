@@ -20,6 +20,8 @@ class Facturas extends Component
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $fecha_fac, $num_fac, $monto, $proveedor_id, $hiden, $added=0; //added debe ser 0 por default
 
+    public $old_monto;
+
     protected $listeners = ['refreshData' => 'cleanData']; //? by me 
 
     public $updateMode = false;
@@ -29,13 +31,9 @@ class Facturas extends Component
     public $filter = "Número de factura";
     public $filterFecha = "Fecha";
     public $SearchByProve = "Proveedor";
-    public $SearchByNum = "Número de factura";
-    
-    
-    
+    public $SearchByNum = "Número de factura";  
    
     public $paramfilter = 'num_fac';
-
 
 
     // public $endsOnDate;
@@ -107,19 +105,26 @@ class Facturas extends Component
             // ->orWhere('proveedor_id', 'LIKE', $keyWord)
             ->orWhere($this->paramfilter, 'LIKE', $keyWord)
             ->whereNull('facturas.hiden')->orWhere('facturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
+            // ->where(function ($query) {
+            //     $query->whereNull('facturas.hiden')
+            //           ->orWhere('facturas.hiden', '=', 0);
+            // })
             ->paginate(10),
         ], compact('selectores','selectorFac'));
     }
 
     public function hidenstate($id_factura){ //* sirve para ocultar los registros en lugar de destruirlos
 
+        //advertir cuando se va a eliminar una factura asociada a un quedan.
+        // utilizar un alert2
+
 		//* ocultamos la factura en cuestión y reseteamos el idquedan añadido
-		$ocultarF = Factura::find($id_factura);
-		$ocultarF -> update(['hiden' => 1, 'added'=> 0]);
+            $ocultarF = Factura::find($id_factura);
+            $ocultarF -> update(['hiden' => 1, 'added'=> 0]);
 
         //? ocultamos el Quedanfactura relacionado con esta factura. Ojo, si se fuera a ELIMINAR, esto debe ser después de actualizar el monto en Quedan 
-        $ocultarQF = Quedanfactura::select('id')->where('factura_id', $id_factura);
-        $ocultarQF -> update(['hiden' => 1,]);
+            $ocultarQF = Quedanfactura::select('id')->where('factura_id', $id_factura);
+            $ocultarQF -> update(['hiden' => 1,]);
         // $eliminarQF = Quedanfactura::select('id')->where('factura_id', $id_factura);
         // $eliminarQF->delete();
 
@@ -161,8 +166,6 @@ class Facturas extends Component
         
     }
 
-
-
     // public function create(){
     //     $factura = new Factura();
     //     return view('factura.create', compact('factura'));
@@ -202,7 +205,9 @@ class Facturas extends Component
     }
 
     public function edit($id)
-    {
+    { 
+        // dd('editar');
+
         $record = Factura::findOrFail($id);
 
         $this->selected_id = $id; 
@@ -210,6 +215,10 @@ class Facturas extends Component
 		$this->num_fac = $record-> num_fac;
 		$this->monto = $record-> monto;
 		$this->proveedor_id = $record-> proveedor_id;
+        //asignando monto a old_monto
+		$this->old_monto = $record-> monto;
+
+        // dd($this->old_monto);
 		
         $this->updateMode = true;
     }
@@ -217,13 +226,8 @@ class Facturas extends Component
     public function update()
     {
 
-        // Si se quiere actualizar el monto, y éste está "sumado" en el valor de algún quedan
-        // se debe crear una variable tipo $old_monto, para guardar el monto actual, y hacer un proceso
-        //donde primero se decremente en tal quedan el antiguo monto y luego se incremente con el nuevo monto.
-        //Se puede hacer a través de una comparación de montos, donde si son igulaes, que el proceso continue como antes,
-        // de lo contrario hacer el nuevo proceso.
-        // // Se debe tener cuidado que a $old_monto sólo se le asigne una vez de modo que no debe tomar el valor
-        // // de la variable antigua, sino hacer una consulta
+        // dd("break down");
+
         $this->validate([
 		'fecha_fac' => 'required',
 		'num_fac' => 'required',
@@ -232,6 +236,30 @@ class Facturas extends Component
         ]);
 
         if ($this->selected_id) {
+
+            // dd('old monto', $this->old_monto,'new monto', $this->monto);
+
+      //*? ---------- Actualizando monto total del Quedan -----------
+         if($this->monto != $this->old_monto){
+
+            // dd('here!');
+
+            //* obtenemos quedan_id  "extrayéndolo" de la tabla Quedanfacturas
+            $MyIDQdn = Quedanfactura::select('quedan_id')
+            ->where('factura_id', $this->selected_id)
+            ->value('quedan_id');
+
+            //* decrementamos la cantidad antigua al quedan respectivo, 
+            $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
+            $decrement->decrement('cant_num', $this->old_monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+
+            //* incrementamos la nueva cantidad al quedan respectivo
+            $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
+            $decrement->increment('cant_num', $this->monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+          }
+       //? -----------------------------------------------------------------------------
+
+
 			$record = Factura::find($this->selected_id);
             $record->update([ 
 			'fecha_fac' => $this-> fecha_fac,

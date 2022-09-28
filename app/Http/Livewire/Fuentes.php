@@ -56,19 +56,24 @@ class Fuentes extends Component
 
 
             //*? ------ Un proceso más para ocultar facturas  ------
-            //! tras "eliminar" una fuente, cada quedan donde la fuente
-            //! haya sido añadida deberá ocultarse, juntamente con TODAS las facturas
-            //! que se hayan "relacionado" con el quedan.
+              //! tras "eliminar" una fuente, cada quedan donde la fuente
+              //! haya sido añadida deberá ocultarse, juntamente con TODAS las facturas
+              //! que se hayan "relacionado" con el quedan.
 
-            //* Obteniendo factura_id  "extrayéndolo" de la tabla Quedanfacturas
-                $MyIDFact = Quedanfactura::select('factura_id')
-                ->where('quedan_id', $MyQdnIds->id)->value('factura_id');
+            //? Obteniendo factura_id  "extrayéndolo" de la tabla Quedanfacturas
+                // $MyIDFact = Quedanfactura::select('factura_id')
+                // ->where('quedan_id', $MyQdnIds->id)->value('factura_id');
 
             //? Ocultando la o las Facturas que tienen que ver con (los quedans de) la fuente a ocultar
-            //! es posible no ocultar las facturas sin que haya conflictos, debido a que
-            //! las facturas no se muestran una vez son "relacionadas" con un quedan.
+              //! es posible no ocultar las facturas sin que haya conflictos, debido a que
+              //! las facturas no se muestran una vez son "relacionadas" con un quedan.
                 // $hidingFact = Factura::select('id')->where('id', $MyIDFact);
                 // $hidingFact->update(['hiden' => 1,]);
+
+              //! # algo más preciso para ocultar facturas es por medio del added ya que guarda el id de quedan
+              //! al que fue "añadida" la factura.
+                  $hidingFact = Factura::select('id')->where('added', $MyQdnIds->id);
+                  $hidingFact->update(['hiden' => 1,]);
             //? --------------------------------------------------------
 
         }

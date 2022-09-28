@@ -56,14 +56,19 @@ class Proyectos extends Component
             //! que se hayan "relacionado" con el quedan también se ocultarán.
 
             //* Obteniendo factura_id  "extrayéndolo" de la tabla Quedanfacturas
-                $MyIDFact = Quedanfactura::select('factura_id')
-                ->where('quedan_id', $MyQdnIds->id)->value('factura_id');
+                // $MyIDFact = Quedanfactura::select('factura_id')
+                // ->where('quedan_id', $MyQdnIds->id)->value('factura_id');
 
             //? Ocultando la o las Facturas que tienen que ver con (los quedans de) el proyecto a ocultar
             //! es posible no ocultar las facturas sin que haya conflictos, debido a que
-            //! las facturas no se muestran una vez son "relacionadas" con un quedan.
-            //! Y es mejor así para no inhibir un proceso inverso.
-                $hidingFact = Factura::select('id')->where('id', $MyIDFact);
+            //! las facturas no se muestran una vez son "relacionadas" con un quedan
+            //! Auque siempre aparecerían en el view de Facturas
+                // $hidingFact = Factura::select('id')->where('id', $MyIDFact);
+                // $hidingFact->update(['hiden' => 1,]); // #falla: no elimina las del mismo idquedan, solo una.
+
+            //! # algo más preciso para ocultar, es por medio del added ya que guarda el id de quedan
+            //! al que fue "añadida" la factura.
+                $hidingFact = Factura::select('id')->where('added', $MyQdnIds->id);
                 $hidingFact->update(['hiden' => 1,]);
             //? --------------------------------------------------------
 

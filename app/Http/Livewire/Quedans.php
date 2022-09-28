@@ -177,13 +177,17 @@ class Quedans extends Component
 
 	public function hidenstate($id_quedan){ //* sirve para ocultar los registros en lugar de destruirlos
 
-		//* ocultamos el quedan
+		//* ocultamos el quedan y reseteando su monto
 		$ocultarQ = Quedan::find($id_quedan);
-		$ocultarQ -> update(['hiden' => 1,]);
+		$ocultarQ -> update(['hiden' => 1, 'cant_num'=>0]);
 
-		//* ocultamos todos los quedanfacturas relacionados con este quedan
-		$ocultarQF = Quedanfactura::select('id')->where('quedan_id', $id_quedan);
-		$ocultarQF -> update(['hiden' => 1,]);
+		//* destruimos todos los quedanfacturas relacionados con este quedan
+		$deleteQF = Quedanfactura::select('id')->where('quedan_id', $id_quedan);
+		$deleteQF -> delete();
+
+		//* liberando facturas relacionadas
+		$updtAddedFact = Factura::select('added')->where('added', $id_quedan);
+		$updtAddedFact -> update(['added' => 0]);
 
 		session()->flash('message', 'Registro eliminado');
 	}

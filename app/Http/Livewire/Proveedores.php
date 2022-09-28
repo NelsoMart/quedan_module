@@ -32,12 +32,12 @@ class Proveedores extends Component
     { //* sirve para ocultar los registros en lugar de destruirlos
 
         //* ocultamos el proveedor en cuestión
-        $ocultarP = Proveedore::find($id_proveedor);
-        $ocultarP->update(['hiden' => 1,]);
+            $ocultarP = Proveedore::find($id_proveedor);
+            $ocultarP->update(['hiden' => 1,]);
 
         //* también ocultamos la o las facturas (y reseteamos su idquedan añadido) relacionadas con proveedor
-        $ocultarF = Factura::select('id')->where('proveedor_id', $id_proveedor);
-        $ocultarF->update(['hiden' => 1, 'added'=> 0]);
+            $ocultarF = Factura::select('id')->where('proveedor_id', $id_proveedor);
+            $ocultarF->update(['hiden' => 1, 'added'=> 0]);
 
         //! ################
         //! un nuevo enfoque:  OCULTAR EL O LOS QUEDAN RELACIONADOS; EN LUGAR DE DEJARLOS VISIBLES Y LIMPIOS (decrementado montos de facturas solamente)
@@ -48,9 +48,9 @@ class Proveedores extends Component
         //? Se recorre $gettingIdsFacts por si no trae uno sino varios registros relacionados
         foreach ($gettingIdsFacts as $MyFactIds) {
 
-            //? Se oculta también el o los Quedanfacturas relacionados a la o las  facturas
-            $ocultarQF = Quedanfactura::select('id')->where('factura_id', $MyFactIds->id);
-            $ocultarQF->update(['hiden' => 1,]);
+            //? Se destruye el o los Quedanfacturas relacionados a la o las  facturas
+                $deleteQF = Quedanfactura::select('id')->where('factura_id', $MyFactIds->id);
+                $deleteQF->delete();
 
 
             //*? ------ Un proceso más para actualizar el valor numérico en Quedan ------
