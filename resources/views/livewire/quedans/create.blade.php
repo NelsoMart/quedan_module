@@ -6,7 +6,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="createDataModalLabel">Nuevo Quedan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true close-btn">×</span>
+                    <span aria-hidden="true close-btn" wire:click="$emit('refreshSelect2')">×</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -166,9 +166,32 @@
 
             {{-- //todo Buttons --}}
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary close-btn" data-dismiss="modal">Cancelar</button>
-                <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
+                <button type="button" class="btn btn-secondary close-btn" wire:click="$emit('refreshSelect2')" data-dismiss="modal">Cancelar</button>
+                <span wire:click="$emit('refreshSelect2')">
+                    <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
+               </span>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    window.onload = function(){ // found
+        Livewire.on('select2Send',() => {
+            $('#fuente_id').select2({
+                        placeholder: "-- Seleccione el tipo de fuente --",
+                        allowClear: true
+                   }); //inicializar
+
+            $('#proyecto_id').select2({
+                        placeholder: "-- Seleccione el Proyecto --",
+                        allowClear: true
+                   }); //inicializar
+
+            $('#proveedor_id').select2({
+                        placeholder: "-- Seleccione el Proveedor --",
+                        allowClear: true
+                   }); //inicializar
+        })
+    }
+</script>

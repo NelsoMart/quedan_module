@@ -22,7 +22,13 @@ class Facturas extends Component
 
     public $old_monto;
 
-    protected $listeners = ['refreshData' => 'cleanData']; //? by me 
+
+    protected $listeners = [
+                             'refreshData' => 'cleanData',
+                             'brandSelected' => 'updatingBrandName',
+                             'refreshSelect2' => 'cleanSelect2',
+                              'oui',
+                            ]; //? by me 
 
     public $updateMode = false;
 
@@ -70,10 +76,7 @@ class Facturas extends Component
         $this->filter = $this->filter;
         $this->paramfilter = 'num_fac';
     }
-    
 
-    
-   
 
     public function render()
     {
@@ -96,6 +99,7 @@ class Facturas extends Component
                     'facturas.num_fac',
 					'facturas.monto',
 					'facturas.proveedor_id',
+					'facturas.added',
 					'proveedores.id AS my_ProveId','proveedores.nombre_proveedor',
 			) ->orderBy('facturas.id', 'DESC')
 
@@ -139,10 +143,10 @@ class Facturas extends Component
         ->where('id', $id_factura)
         ->value('monto');
 
-        //* decrementamos  la cantidad_num del quedan, tras ocultar la factura que había probocado su incremento
+        //* Descontamos el monto a cantidad_num del quedan tras ocultar la factura que había probocado su incremento
         $record2 = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
         $record2->decrement('cant_num', $montofact); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
-    //? -----------------------------------------------------------------------------
+      //? -----------------------------------------------------------------------------
 
 		session()->flash('message', 'Registro eliminado');
 	}
@@ -154,8 +158,8 @@ class Facturas extends Component
     }
 	
     private function resetInput()
-    {		
-		// $this->fecha_fac = null; //todo: para que lo obtenga siempre automacico
+    {	
+		// $this->fecha_fac = null; //todo: para que lo obtenga siempre automatico
 		$this->num_fac = null;
 		$this->monto = null;
 		$this->proveedor_id = null;
@@ -166,10 +170,6 @@ class Facturas extends Component
         
     }
 
-    // public function create(){
-    //     $factura = new Factura();
-    //     return view('factura.create', compact('factura'));
-    // }
 
     public function store()
     {
@@ -205,10 +205,15 @@ class Facturas extends Component
     }
 
     public function edit($id)
-    { 
+    { // es llamada al presionar el botón para abrir el modal de edit
         // dd('editar');
 
         $record = Factura::findOrFail($id);
+
+        // $recor2 = Proveedore::findOrFail($)
+        // $recor2 = Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
+        //     ->findOrFail($id);
+
 
         $this->selected_id = $id; 
 		$this->fecha_fac = $record-> fecha_fac;
@@ -218,13 +223,12 @@ class Facturas extends Component
         //asignando monto a old_monto
 		$this->old_monto = $record-> monto;
 
-        // dd($this->old_monto);
-		
         $this->updateMode = true;
+        
     }
 
     public function update()
-    {
+    { // Se llama al precionar el botón para guardar los cambios de una actualización
 
         // dd("break down");
 
@@ -239,25 +243,25 @@ class Facturas extends Component
 
             // dd('old monto', $this->old_monto,'new monto', $this->monto);
 
-      //*? ---------- Actualizando monto total del Quedan -----------
-         if($this->monto != $this->old_monto){
+            //*? ---------- Actualizando monto total del Quedan -----------
+                if($this->monto != $this->old_monto){
 
-            // dd('here!');
+                    // dd('here!');
 
-            //* obtenemos quedan_id  "extrayéndolo" de la tabla Quedanfacturas
-            $MyIDQdn = Quedanfactura::select('quedan_id')
-            ->where('factura_id', $this->selected_id)
-            ->value('quedan_id');
+                    //* obtenemos quedan_id  "extrayéndolo" de la tabla Quedanfacturas
+                    $MyIDQdn = Quedanfactura::select('quedan_id')
+                    ->where('factura_id', $this->selected_id)
+                    ->value('quedan_id');
 
-            //* decrementamos la cantidad antigua al quedan respectivo, 
-            $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
-            $decrement->decrement('cant_num', $this->old_monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+                    //* decrementamos la cantidad antigua al quedan respectivo, 
+                    $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
+                    $decrement->decrement('cant_num', $this->old_monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
 
-            //* incrementamos la nueva cantidad al quedan respectivo
-            $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
-            $decrement->increment('cant_num', $this->monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
-          }
-       //? -----------------------------------------------------------------------------
+                    //* incrementamos la nueva cantidad al quedan respectivo
+                    $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
+                    $decrement->increment('cant_num', $this->monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+                }
+            //? -----------------------------------------------------------------------------
 
 
 			$record = Factura::find($this->selected_id);
@@ -288,5 +292,11 @@ class Facturas extends Component
 
         $this->emit('dataSend', 1, $saludo); // enviamos un parametro 1, solo para ver cómo funcionan los parámetros
         $this->reset(['fecha_fac', 'monto', 'num_fac', 'proveedor_id']);
+    }
+
+    public function cleanSelect2() //? para limpiar los select2
+    {  
+        $this->emit('select2Send'); // enviamos un parametro 1, solo para ver cómo funcionan los parámetros
+        $this->reset(['proveedor_id']);
     }
 }

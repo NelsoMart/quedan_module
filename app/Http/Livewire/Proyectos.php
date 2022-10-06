@@ -31,23 +31,23 @@ class Proyectos extends Component
     public function hidenstate($id_proyecto)
     { //* sirve para ocultar los registros en lugar de destruirlos
 
-        //* ocultamos el proyecto en cuestión
+        //* ocultamos el proyecto
         $ocultarP = Proyecto::find($id_proyecto);
         $ocultarP->update(['hiden' => 1,]);
 
         //* también ocultamos el o los quedans relacionadas con este proyecto
-        $ocultarF = Quedan::select('id')->where('proyecto_id', $id_proyecto);
-        $ocultarF->update(['hiden' => 1,]);
+        // $ocultarF = Quedan::select('id')->where('proyecto_id', $id_proyecto);
+        // $ocultarF->update(['hiden' => 1,]);
 
         //? Se hace una búsqueda que retornará uno o VARIOS quedans relacionados con el mismo proyecto
-        $gettingIdsQdns = Quedan::select('id')->where('proyecto_id', $id_proyecto)->get();
+        // $gettingIdsQdns = Quedan::select('id')->where('proyecto_id', $id_proyecto)->get();
 
         //? Se recorre $gettingIdsQdns por si no trae uno sino varios registros relacionados
-        foreach ($gettingIdsQdns as $MyQdnIds) {
+        // foreach ($gettingIdsQdns as $MyQdnIds) {
 
             //? Se oculta también el o los Quedanfacturas relacionados con cada quedan
-            $ocultarQF = Quedanfactura::select('id')->where('quedan_id', $MyQdnIds->id);
-            $ocultarQF->update(['hiden' => 1,]);
+            // $ocultarQF = Quedanfactura::select('id')->where('quedan_id', $MyQdnIds->id);
+            // $ocultarQF->update(['hiden' => 1,]);
 
 
             //*? ------ Un proceso más para ocultar facturas  ------
@@ -68,11 +68,11 @@ class Proyectos extends Component
 
             //! # algo más preciso para ocultar, es por medio del added ya que guarda el id de quedan
             //! al que fue "añadida" la factura.
-                $hidingFact = Factura::select('id')->where('added', $MyQdnIds->id);
-                $hidingFact->update(['hiden' => 1,]);
+                // $hidingFact = Factura::select('id')->where('added', $MyQdnIds->id);
+                // $hidingFact->update(['hiden' => 1,]);
             //? --------------------------------------------------------
 
-        }
+        // }
 
         session()->flash('message', 'Registro eliminado');
     }

@@ -7,7 +7,7 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
             <div class="modal-header">
                 <h5 class="modal-title" id="createDataModalLabel">Nueva Factura</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true close-btn">×</span>
+                     <span aria-hidden="true close-btn" wire:click="$emit('refreshSelect2')" >×</span>
                 </button>
             </div>
            <div class="modal-body">
@@ -39,16 +39,7 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
                 </select>
             </div>
 
-            
-           {{-- <div class="form-group" wire:ignore>
-                <label for="proveedor_id"></label>
-                <select class="form-control" style="width: 100%" wire:model="proveedor_id" id="proveedor_id">
-                    <option value="">--- Seleccione el proveedor ---</option>
-                    @foreach ($selectores as $selector)
-                    <option value="{{ $selector->id }}"> {{ $selector['nombre_proveedor'] }}</option>
-                    @endforeach
-                </select>
-            </div> --}}
+            {{-- todo: section scripts --}}
 
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
@@ -76,11 +67,11 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
                 });
             </script>
 
-            <script>
+            {{-- <script>
                 $('#createDataModal').on('hidden.bs.modal', function () {
                     alert('holaaa');
                 })
-            </script>
+            </script> --}}
            
             {{-- <script>
                 $(document).ready(function() {
@@ -115,21 +106,35 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary close-btn" data-dismiss="modal">Close</button>
-                <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Save</button>
+                <button type="button" class="btn btn-secondary close-btn" wire:click="$emit('refreshSelect2')" data-dismiss="modal">Cancelar</button>
+                <span wire:click="$emit('refreshSelect2')">
+                     <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
+                </span>
                 <button type="button" wire:click="$emit('refreshData')" class="btn">run JavaScript script</button>
+                <button type="button" wire:click="$emit('refreshSelect2')" class="btn">clean selet2</button>
             </div>
         </div>
     </div>
 </div>
 
-{{-- <script>
-    window.onload = function(){ // fopund
+<script>
+    window.onload = function(){ // found
         Livewire.on('dataSend',(postID, MyString) => {
-            alert("Tu formulario no quiere enviarse, jajaja." + postID + MyString )
+            alert("Mensaje: " + postID + MyString )
         })
     }
-</script> --}}
+</script>
+
+<script>
+    window.onload = function(){ // found
+        Livewire.on('select2Send',() => {
+            $('#proveedor_id').select2({
+                        placeholder: "-- Seleccione el Proveedor --",
+                        allowClear: true
+                   }); //inicializar
+        })
+    }
+</script>
 
 {{-- <script>
     document.addEventListener("livewire:load", () => {

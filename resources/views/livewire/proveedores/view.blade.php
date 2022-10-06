@@ -51,7 +51,23 @@
 									</button>
 									<div class="dropdown-menu dropdown-menu-right">
 									<a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar </a>							 
-									<a class="dropdown-item" onclick="confirm('¿Confirma que quiere eliminar el proveredor con id {{$row->id}}? \n¡Eliminar este proveedor hará que se eliminen tabién los quedan y facturas relacionados con él!')||event.stopImmediatePropagation()" wire:click="hidenstate({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>   
+									
+									{{-- <a class="dropdown-item" onclick="confirm('¿Confirma que quiere eliminar el proveredor con id {{$row->id}}? \n¡Eliminar este proveedor hará que se eliminen tabién los quedan y facturas relacionados con él!')||event.stopImmediatePropagation()" wire:click="hidenstate({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>    --}}
+									
+									<a class="dropdown-item" 
+									onclick="confirm('¿Confirma que desea eliminar el proveedor {{$row->nombre_proveedor}}?')
+									   ||event.stopImmediatePropagation()" 
+									   wire:click="hidenstate({{$row->id}})"
+									   >
+									   <i class="fa fa-trash"></i> Eliminar </a> 
+									   
+									   {{-- <a class="dropdown-item" wire:click="$emit('triggerDelete',{{ $row->id }})">
+										<i class="fa fa-trash"></i> Eliminar </a>  --}}
+
+									   {{-- <a class="dropdown-item" wire:click="hidingfact({{$row->id}})">
+										<i class="fa fa-trash"></i> Eliminar </a>  --}}
+
+									{{-- <a class="dropdown-item" onclick="confirm('Se ha eliminado el proveredor con id {{$row->id}}? \n¿Desea eliminar las facturas que no están asociadas a ningún quedan?')||event.stopImmediatePropagation()" wire:click="hidingfact({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>    --}}
 									</div>
 								</div>
 								</td>
@@ -60,8 +76,52 @@
 					</table>						
 					{{ $proveedores->links() }}
 					</div>
+
+
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+@push('scripts')
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        @this.on('triggerDelete', orderId => {
+            Swal.fire({
+                title: 'Are You Sure?',
+                text: 'Order record will be deleted!',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: 'var(--success)',
+                cancelButtonColor: 'var(--primary)',
+                confirmButtonText: 'Delete!'
+            }).then((result) => {
+		//if user clicks on delete
+                if (result.value) {
+		     // calling destroy method to delete
+                    @this.call('destroy',orderId)
+		    // success response
+                    responseAlert({title: session('message'), type: 'success'});
+                    
+                } else {
+                    responseAlert({
+                        title: 'Operation Cancelled!',
+                        type: 'success'
+                    });
+                }
+            });
+        });
+    })
+</script>
+@endpush
+
+<script>
+	Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'Something went wrong!',
+  footer: '<a href="">Why do I have this issue?</a>'
+})
+</script>

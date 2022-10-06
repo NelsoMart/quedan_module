@@ -14,6 +14,7 @@
         {{-- //! by me --}}
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+     <script src="sweetalert2.all.min.js"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -24,7 +25,8 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
      {{-- //! by me --}}
      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-     
+     {{-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> --}}
+
 	 
 </head>
 <body>
@@ -119,6 +121,64 @@
 	});
 </script>
 
+<script>
+    window.addEventListener('modal', event => { 
+        Swal.fire({
+        title: event.detail.message,
+        text: event.detail.text,
+        icon: event.detail.icon,
+        timer: event.detail.timer,
+        toast: event.detail.toast,
+        // position: event.detail.position,
+        
+        });
+
+        // swal('Any fool can use a computer')
+    });
+
+//     window.addEventListener('confirm', event => { 
+//     Swal.fire({
+//       title: event.detail.message,
+//       text: event.detail.text,
+//       icon: event.detail.type,
+//     //   buttons: event.detail.buttons,
+//     //   dangerMode: event.detail.dangerMode,
+//       showCancelButton: true,
+//     //   buttons: true,
+//     //   dangerMode: true,
+//     })
+//     .then((willDelete) => {
+//       if (willDelete) {
+//         window.livewire.emit('hidingfact');
+//       }
+//     });
+// });
+
+    window.addEventListener('confirm', event => { 
+        Swal.fire({
+            title: event.detail.message,
+            text: event.detail.text,
+            icon: event.detail.type,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '¡Sí, eliminar!'
+            // cancelButtonText: 'No, cancel!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                // Swal.fire(
+                // 'Deleted!',
+                // 'Your file has been deleted.',
+                // 'success'
+                // )
+
+                window.livewire.emit('hidingfact');
+            }
+            })
+    });
+
+
+</script>
 
 @stack('scripts') 
 

@@ -52,7 +52,7 @@
 									<div class="dropdown-menu dropdown-menu-right">
 									<a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar </a>							 
 									{{-- <a class="dropdown-item" onclick="confirm('Confirm Delete Fuente id {{$row->id}}? \nDeleted Fuentes cannot be recovered!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>    --}}
-									<a class="dropdown-item" onclick="confirm('¿Confirma que quiere eliminar la fuente con id {{$row->id}}? \n¡Eliminar esta fuente hará que se eliminen tabién los quedan y facturas relacionados con ella!')||event.stopImmediatePropagation()" wire:click="hidenstate({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>   
+									<a class="dropdown-item" onclick="confirm('¿Confirma que quiere eliminar la fuente con nombre: {{$row->nombre_fuente}}?')||event.stopImmediatePropagation()" wire:click="hidenstate({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>   
 									</div>
 								</div>
 								</td>

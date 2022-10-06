@@ -33,26 +33,26 @@ class Fuentes extends Component
     public function hidenstate($id_fuente)
     { //* sirve para ocultar los registros en lugar de destruirlos
 
-        //* ocultamos la fuente en cuestión
+        //* ocultamos la fuente 
         $ocultarP = Fuente::find($id_fuente);
         $ocultarP->update(['hiden' => 1,]);
 
         //* también ocultamos el o los quedans relacionadas con esta fuente
-        $ocultarF = Quedan::select('id')->where('fuente_id', $id_fuente);
-        $ocultarF->update(['hiden' => 1,]);
+        // $ocultarF = Quedan::select('id')->where('fuente_id', $id_fuente);
+        // $ocultarF->update(['hiden' => 1,]);
 
         //! ################
         //! un nuevo enfoque:  OCULTAR LA O LAS FACTURAS RELACIONADAS; PRESERVANDO SU ESTADO ADDED
 
         //? Se hace una búsqueda que retornará uno o VARIOS quedans relacionados con la misma fuente
-        $gettingIdsQdns = Quedan::select('id')->where('fuente_id', $id_fuente)->get();
+        // $gettingIdsQdns = Quedan::select('id')->where('fuente_id', $id_fuente)->get();
 
         //? Se recorre $gettingIdsQdns por si no trae uno sino varios registros relacionados
-        foreach ($gettingIdsQdns as $MyQdnIds) {
+        // foreach ($gettingIdsQdns as $MyQdnIds) {
 
             //? Se oculta también el o los Quedanfacturas relacionados al o a los quedans
-            $ocultarQF = Quedanfactura::select('id')->where('quedan_id', $MyQdnIds->id);
-            $ocultarQF->update(['hiden' => 1,]);
+            // $ocultarQF = Quedanfactura::select('id')->where('quedan_id', $MyQdnIds->id);
+            // $ocultarQF->update(['hiden' => 1,]);
 
 
             //*? ------ Un proceso más para ocultar facturas  ------
@@ -72,11 +72,11 @@ class Fuentes extends Component
 
               //! # algo más preciso para ocultar facturas es por medio del added ya que guarda el id de quedan
               //! al que fue "añadida" la factura.
-                  $hidingFact = Factura::select('id')->where('added', $MyQdnIds->id);
-                  $hidingFact->update(['hiden' => 1,]);
+                //   $hidingFact = Factura::select('id')->where('added', $MyQdnIds->id);
+                //   $hidingFact->update(['hiden' => 1,]);
             //? --------------------------------------------------------
 
-        }
+        // }
 
         session()->flash('message', 'Registro eliminado');
     }

@@ -10,14 +10,9 @@ use App\Models\Factura;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Quedan;
-use PhpParser\Node\Expr\Cast\Double;
 use Illuminate\Support\Carbon;
 // use Barryvdh\DomPDF\PDF;
 use Barryvdh\DomPDF\Facade\PDF;
-use GuzzleHttp\Promise\Is;
-use GuzzleHttp\Psr7\Request;
-use Hamcrest\Core\IsNull;
-use Mockery\Undefined;
 
 class Quedans extends Component
 {
@@ -38,7 +33,11 @@ class Quedans extends Component
 
 	public $selected_date;
 	public $monto_fact = "monto";
-	protected $listeners = ["selectDate" => 'getSelectedDate'];
+	protected $listeners = [
+							  "selectDate" => 'getSelectedDate',
+							  'refreshSelect2' => 'cleanSelect2',
+							];
+
 
 	public $selected_monto;
 	public $getNumQuedan;
@@ -50,6 +49,7 @@ class Quedans extends Component
 	public $searchByQuedan = "Buscar num Quedan";
 	//
 	public $paramFilter = 'num_quedan';
+	public $filterMod = 'like'; 
 
 	// public $endsOnDate;
 	public $reminder;
@@ -135,6 +135,27 @@ class Quedans extends Component
 
 		$this->dispatchBrowserEvent('contentChanged');
 
+		// switch ($this->paramFilter) {
+		// 	case 'num_quedan':
+		// 		# code...
+		// 		// dd('num quedan!');
+		// 		$keyWord = $this->keyWord;
+		// 		$this->filterMod = '=';
+		// 		break;
+			
+		// 	case 'proyectos.nombre_proyecto':
+		// 		# code...
+		// 		// dd('nom pro');
+		// 		$keyWord = '%' . $this->keyWord . '%';
+		// 		$this->filterMod = 'like';
+				
+		// 		break;
+			
+		// 	default:
+		// 		# code...
+		// 		break;
+		// }
+
 		$keyWord = '%' . $this->keyWord . '%';
 
 			// dd($keyWord);
@@ -165,7 +186,7 @@ class Quedans extends Component
 							'fuentes.id AS my_fuenttId','fuentes.nombre_fuente',
 							'proveedores.id AS my_proveeId','proveedores.nombre_proveedor',)
 						->orderBy('quedans.id', 'DESC')
-						->orWhere($this->paramFilter, 'LIKE', $keyWord)
+						->orWhere($this->paramFilter, $this->filterMod, $keyWord)
 						->whereNull('quedans.hiden')->orWhere('quedans.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
 						// // ->orWhere('fecha_emi', 'LIKE', $keyWord)
 					->paginate(15),
@@ -806,4 +827,12 @@ class Quedans extends Component
 			$record->delete();
 		}
 	}
+
+    public function cleanSelect2() //? para limpiar los select2
+    {  
+        $this->emit('select2Send'); // enviamos un parametro 1, solo para ver cómo funcionan los parámetros
+        $this->reset(['fuente_id']);
+        $this->reset(['proyecto_id']);
+        $this->reset(['proveedor_id']);
+    }
 }
