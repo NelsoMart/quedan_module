@@ -33,3 +33,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 	Route::view('fuentes', 'livewire.fuentes.index')->middleware('auth');
 	Route::view('proyectos', 'livewire.proyectos.index')->middleware('auth');
 	Route::get('/print_quedan/{id}/{cant_num}', [App\Http\Controllers\PdfController::class, 'index'])->name('print_quedan');
+
+

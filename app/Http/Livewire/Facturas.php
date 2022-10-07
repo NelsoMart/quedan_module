@@ -34,12 +34,15 @@ class Facturas extends Component
 
     public $ottPlatform = '';
     public $prestaciones, $prestacionSelectedId;
+
     public $filter = "Número de factura";
-    public $filterFecha = "Fecha";
-    public $SearchByProve = "Proveedor";
-    public $SearchByNum = "Número de factura";  
+
+    public $searchFecha = "Fecha";
+    public $searchByProve = "Proveedor";
+    public $searchByNumFac = "Número de factura";  
    
-    public $paramfilter = 'num_fac';
+    public $paramFilter = 'num_fac';
+    public $filterMod = 'like'; 
 
 
     // public $endsOnDate;
@@ -64,17 +67,17 @@ class Facturas extends Component
 
 
     public function SearchByProve(){
-        $this->filter = $this->SearchByProve;
-        $this->paramfilter = 'proveedores.nombre_proveedor';
+        $this->filter = $this->searchByProve;
+        $this->paramFilter = 'proveedores.nombre_proveedor';
     }
 
     public function SearchByDate(){
-        $this->filter = $this->filterFecha;
-        $this->paramfilter = 'fecha_fac';
+        $this->filter = $this->searchFecha;
+        $this->paramFilter = 'fecha_fac';
     }
     public function SearchByNumFac(){
-        $this->filter = $this->filter;
-        $this->paramfilter = 'num_fac';
+        $this->filter = $this->searchByNumFac;
+        $this->paramFilter = 'num_fac';
     }
 
 
@@ -91,6 +94,15 @@ class Facturas extends Component
 		$this->dispatchBrowserEvent('contentChanged');
 
 		$keyWord = '%'.$this->keyWord .'%';
+
+        if($keyWord != "%%" && $this->paramFilter == "num_fac"){
+        $keyWord = $this->keyWord;
+        $this->filterMod = "=";
+        } else {
+        $keyWord = '%' . $this->keyWord . '%';
+        $this->filterMod = "like";
+        }
+
         return view('livewire.facturas.view', [
             // 'facturas' => Factura::latest()
             'facturas' => Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
@@ -103,12 +115,17 @@ class Facturas extends Component
 					'proveedores.id AS my_ProveId','proveedores.nombre_proveedor',
 			) ->orderBy('facturas.id', 'DESC')
 
-						// ->orWhere('fecha_fac', 'LIKE', $keyWord)
+		    // ->orWhere('fecha_fac', 'LIKE', $keyWord)
             // ->orWhere('num_fac', 'LIKE', $keyWord) //! ### descomentar
             // ->orWhere('monto', 'LIKE', $keyWord)
             // ->orWhere('proveedor_id', 'LIKE', $keyWord)
-            ->orWhere($this->paramfilter, 'LIKE', $keyWord)
-            ->whereNull('facturas.hiden')->orWhere('facturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
+            ->orWhere($this->paramFilter, $this->filterMod, $keyWord)
+            ->where(function ($query) {
+                $query->whereNull('facturas.hiden')
+                    ->orWhere('facturas.hiden', '=', 0);
+            })
+            // ->orWhere($this->paramFilter, 'LIKE', $keyWord)
+            // ->whereNull('facturas.hiden')->orWhere('facturas.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
             // ->where(function ($query) {
             //     $query->whereNull('facturas.hiden')
             //           ->orWhere('facturas.hiden', '=', 0);

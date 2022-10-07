@@ -42,11 +42,13 @@ class Quedans extends Component
 	public $selected_monto;
 	public $getNumQuedan;
 	public $filter = "Buscar num Quedan";
+	
+	public $searchByQuedan = "Buscar num Quedan";
+	public $searchByCantidad = "Buscar Cantidad";
 	public $searchByDate = "Buscar Fecha";
 	public $searchByFuent = "Buscar Fuente";
 	public $searchByProject = "Buscar Proyecto";
 	public $searchByProve = "Buscar Proveedor";
-	public $searchByQuedan = "Buscar num Quedan";
 	//
 	public $paramFilter = 'num_quedan';
 	public $filterMod = 'like'; 
@@ -62,6 +64,14 @@ class Quedans extends Component
 		'fecha_emi' => 'date:Y-m-d',
 	];
 
+	public function SearchByQuedan(){
+		$this->filter = $this->searchByQuedan;
+		$this->paramFilter = 'num_quedan';
+	 }
+	public function SearchByCantidad(){
+		$this->filter = $this->searchByCantidad;
+		$this->paramFilter = 'cant_num';
+	 }
 	public function SearchByDate(){
        $this->filter = $this->searchByDate;
 	   $this->paramFilter = 'fecha_emi';
@@ -78,10 +88,7 @@ class Quedans extends Component
        $this->filter = $this->searchByProve;
 	   $this->paramFilter = 'proveedores.nombre_proveedor';
 	}
-	public function SearchByQuedan(){
-		$this->filter = $this->searchByQuedan;
-		$this->paramFilter = 'num_quedan';
-	 }
+	
 
 
 	public function mount()
@@ -135,28 +142,17 @@ class Quedans extends Component
 
 		$this->dispatchBrowserEvent('contentChanged');
 
-		// switch ($this->paramFilter) {
-		// 	case 'num_quedan':
-		// 		# code...
-		// 		// dd('num quedan!');
-		// 		$keyWord = $this->keyWord;
-		// 		$this->filterMod = '=';
-		// 		break;
-			
-		// 	case 'proyectos.nombre_proyecto':
-		// 		# code...
-		// 		// dd('nom pro');
-		// 		$keyWord = '%' . $this->keyWord . '%';
-		// 		$this->filterMod = 'like';
-				
-		// 		break;
-			
-		// 	default:
-		// 		# code...
-		// 		break;
-		// }
 
 		$keyWord = '%' . $this->keyWord . '%';
+
+		if($keyWord != "%%" && ($this->paramFilter == "num_quedan" 
+		                    || $this->paramFilter == "cant_num")){
+			$keyWord = $this->keyWord;
+			$this->filterMod = "=";
+		} else {
+			$keyWord = '%' . $this->keyWord . '%';
+			$this->filterMod = "like";
+		}
 
 			// dd($keyWord);
 
@@ -187,7 +183,11 @@ class Quedans extends Component
 							'proveedores.id AS my_proveeId','proveedores.nombre_proveedor',)
 						->orderBy('quedans.id', 'DESC')
 						->orWhere($this->paramFilter, $this->filterMod, $keyWord)
-						->whereNull('quedans.hiden')->orWhere('quedans.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
+						->where(function ($query) {
+							$query->whereNull('quedans.hiden')
+								->orWhere('quedans.hiden', '=', 0);
+						})
+						// ->whereNull('quedans.hiden')->orWhere('quedans.hiden', '=', 0) //? debe ir después del orWhere de búsqueda... Esta línea es un 'where or where'
 						// // ->orWhere('fecha_emi', 'LIKE', $keyWord)
 					->paginate(15),
 				], compact('select_fuentes', 'select_proyectos', 'select_proveedores'));
@@ -830,9 +830,17 @@ class Quedans extends Component
 
     public function cleanSelect2() //? para limpiar los select2
     {  
+
+           $id = 52;
+		   $cant_num = 7010;
+
         $this->emit('select2Send'); // enviamos un parametro 1, solo para ver cómo funcionan los parámetros
         $this->reset(['fuente_id']);
         $this->reset(['proyecto_id']);
         $this->reset(['proveedor_id']);
+		
+		// return redirect()->route('Http\Controllers\PdfController@index', [$id, $cant_num]);
+		// return redirect()->route('print_quedan', [$id, $cant_num]);
+
     }
 }

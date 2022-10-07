@@ -178,6 +178,7 @@
 <script>
     window.onload = function(){ // found
         Livewire.on('select2Send',() => {
+
             $('#fuente_id').select2({
                         placeholder: "-- Seleccione el tipo de fuente --",
                         allowClear: true
