@@ -13,7 +13,7 @@ class Quedan extends Model
 
     protected $table = 'quedans';
 
-    protected $fillable = ['num_quedan','fecha_emi','cant_num','cant_letra','fuente_id','proyecto_id', 'proveedor_id', 'hiden', 'select_facturas'];
+    protected $fillable = ['num_quedan','fecha_emi','cant_num','fuente_id','proyecto_id', 'proveedor_id', 'hiden'];
 	
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

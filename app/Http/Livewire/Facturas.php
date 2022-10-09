@@ -75,11 +75,11 @@ class Facturas extends Component
         $this->filter = $this->searchFecha;
         $this->paramFilter = 'fecha_fac';
     }
+
     public function SearchByNumFac(){
         $this->filter = $this->searchByNumFac;
         $this->paramFilter = 'num_fac';
     }
-
 
     public function render()
     {
@@ -172,6 +172,7 @@ class Facturas extends Component
     {
         $this->resetInput();
         $this->updateMode = false;
+        // $this->emit('closeModal');
     }
 	
     private function resetInput()
@@ -182,6 +183,8 @@ class Facturas extends Component
 		$this->proveedor_id = null;
 		$this->added = 0;
 
+        $this->resetErrorBag();
+        $this->emit('closeModal');
 		$this->mount();
 
         
@@ -191,7 +194,7 @@ class Facturas extends Component
     public function store()
     {
 
-        $proveedores = Proveedore::pluck('id', 'nombre_proveedor');
+        // $proveedores = Proveedore::pluck('id', 'nombre_proveedor');
 
         $this->validate([
 		'fecha_fac' => 'required',
@@ -207,16 +210,12 @@ class Facturas extends Component
 			'proveedor_id' => $this-> proveedor_id,
 			'added' => 0 // added debe ser 0 por defecto
         ]);
-
-
-        // request()->validate(Factura::$rules);
-
-        // $factura = Factura::create($request->all());
-
-        // return redirect()->route('facturas.index')
-        //     ->with('success', 'Factura created successfully.');
         
-        $this->resetInput();
+        // $this->emit('select2Send');
+        // $this->reset(['proveedor_id']);
+        $this->cleanSelect2();
+
+        // $this->resetInput();
 		$this->emit('closeModal');
 		session()->flash('message', 'Factura creada con éxito');
     }
@@ -255,6 +254,9 @@ class Facturas extends Component
 		'monto' => 'required',
 		'proveedor_id' => 'required',
         ]);
+
+       	// dd('pass');
+
 
         if ($this->selected_id) {
 
@@ -313,7 +315,8 @@ class Facturas extends Component
 
     public function cleanSelect2() //? para limpiar los select2
     {  
-        $this->emit('select2Send'); // enviamos un parametro 1, solo para ver cómo funcionan los parámetros
+        $this->emit('select2Send');
         $this->reset(['proveedor_id']);
+        $this->resetInput();
     }
 }

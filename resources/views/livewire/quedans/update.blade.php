@@ -7,7 +7,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="updateModalLabel">Actualizar Quedan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span wire:click.prevent="cancel()" aria-hidden="true">×</span>
+                    <span wire:click.prevent="cancel()">×</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -33,13 +33,6 @@
                         <label for="cant_num"></label>
                         <input wire:model="cant_num" type="number" class="form-control" id="cant_num"
                             placeholder="Cant Num">@error('cant_num') <span class="error text-danger">{{ $message
-                            }}</span> @enderror
-                    </div> --}}
-                    {{-- <div class="form-group">
-                        <label for="cant_letra"></label>
-                        <span style="font-size: 80%; color: rgb(190, 206, 218)">Cantidad en letra</span>
-                        <input wire:model="cant_letra" type="text" class="form-control" id="cant_letra"
-                            placeholder="Cant Letra">@error('cant_letra') <span class="error text-danger">{{ $message
                             }}</span> @enderror
                     </div> --}}
                     
@@ -129,7 +122,7 @@
                     <script>
                         $('#select2_1').select2({
                             placeholder: "-- Buscar Nombre de la Fuente --",
-                            allowClear: true,
+                            // allowClear: true,
                             width: '100%'
                         });
                         $('#select2_1').on('change', function(e) {
@@ -143,7 +136,7 @@
                     <script>
                         $('#select2_2').select2({
                             placeholder: "-- Buscar Nombre de Proyecto --",
-                            allowClear: true,
+                            // allowClear: true,
                             width: '100%'
                         });
                         $('#select2_2').on('change', function(e) {
@@ -157,7 +150,7 @@
                     <script>
                         $('#select2_3').select2({
                             placeholder: "-- Buscar Nombre de Proveedor --",
-                            allowClear: true,
+                            // allowClear: true,
                             width: '100%'
                         });
                         $('#select2_3').on('change', function(e) {
@@ -233,64 +226,12 @@
                     @endpush --}}
 
 
-
-                    {{-- <script>
-                        $("#proyecto_id").select2("destroy");
-
-                $("#proyecto_id").select2();
-                    </script> --}}
-
-
-                    {{-- <script>
-                        $(function(){
-                    $('#select2').select2({
-                        theme:'bootstrap4',
-                    }).on('chage', function(){
-                        @this.set('proyecto_id', $(this).val())
-                    })
-                });
-                    </script> --}}
-
-
-
-
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary"
-                    data-dismiss="modal">Cancelar</button>
-                <button type="button" wire:click.prevent="update()" class="btn btn-primary"
-                    data-dismiss="modal">Guardar</button>
+                <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary close-modal">Cancelar</button>
+                <button type="button" wire:click.prevent="update()" class="btn btn-primary close-modal">Guardar</button>
             </div>
         </div>
     </div>
 </div>
-
-{{-- <script>
-    $('.proyecto_id').html('').select2({
-     alert('here')
-                     // var pId = $('#select2').select2("val"); //get proveedor id //? select2
-                     @this.set('proyecto_id', $(this).val())
-                     livewire.on('scan-code', action => {
-                         console.log(pId);
-                         $('#proyecto_id').select2('')
-                     });
-         })
-</script> --}}
-
-{{-- <script>
-    (function($){
-           $(document).on('livewire:load',function(){
-               $('#proyecto_id').select2({
-                   "language":"pt-BR",
-               })
-               Livewire.hook('message.processed',(message,component)=>{
-                   $('#proyecto_id').elect2();
-               })
-           })
-       })(jQuery)
-</script> --}}
-
-{{-- <script>
-    $('#proyecto_id').trigger('change.select2');
-</script> --}}

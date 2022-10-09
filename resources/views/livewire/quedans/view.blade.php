@@ -78,7 +78,7 @@
 						<thead class="thead">
 							<tr> 
 								{{-- <td>#</td>  --}}
-								{{-- <th style="width: 4%">ID</th> --}}
+								<th style="width: 4%">ID</th>
 								<th style="width: 10%">Nums Quedan</th>
 								<th style="width: 15%">Fechas Emis</th>
 								<th style="width: 9%">Cantidades</th>
@@ -93,14 +93,13 @@
 							@foreach($quedans as $row)
 							<tr>
 								{{-- <td>{{ $loop->iteration }}</td>  --}}
-								{{-- <td>{{ $row->id }}</td> --}}
+								<td>{{ $row->id }}</td>
 								<td>{{ $row->num_quedan }}</td>
 								{{-- <td>{{ $row->fecha_emi }}</td> --}}
 								{{-- <td>{{ date('d-m-Y',$row->fecha_emi) }}</td> --}}
 								{{-- <td>{{  strtotime($row->fecha_emi) }}</td> --}}
 								<td>{{ date("d-m-Y", strtotime($row->fecha_emi)) }}</td>
 								<td>${{ number_format($row->cant_num, 2 )  }}</td>
-								 {{-- <td>{{ $row->cant_letra }}</td> --}}
 								{{-- <td>{{ $row->factura_id }}</td>
 								<td>{{ $row->fuente_id }}</td>
 								<td>{{ $row->filter_search }}</td> --}}
@@ -117,9 +116,7 @@
 									<div class="dropdown-menu dropdown-menu-right">
 									{{-- <a  class="dropdown-item" href="{{url('quedans/pdf')}}"><i class="fa fa-print"></i> Imprimir </a>							  --}}
 									<a data-toggle="modal" data-target="#associateModal" class="dropdown-item" wire:click="editQF({{$row->id}}, {{$row->my_proveeId}})"><i style="color: rgb(113, 198, 126)" class="fas fa-file-invoice-dollar"></i> Asociar Facturas </a>							 
-									{{-- @if ($row->) --}}
 									<a class="dropdown-item" href="{{action('App\Http\Controllers\PdfController@index', [$row->id, $row->cant_num])}}"><i style="color: darkgoldenrod" class="fa fa-print"></i> Imprimir </a>							 	
-									{{-- @endif --}}
 									<a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}}, {{$row->my_proveeId}})"><i style="color: deepskyblue" class="fa fa-edit"></i> Editar </a>							 
 									<a class="dropdown-item" onclick="confirm('Confirmar Eliminación Quedan id {{$row->id}}? \nSeguro que quieres eliminarlo!')||event.stopImmediatePropagation()" wire:click="hidenstate({{$row->id}})"><i style="color: firebrick" class="fa fa-trash"></i> Eliminar </a>   
 									{{-- <a  class="dropdown-item" onclick="confirm('Quieres eliminar el quedan? {{$row->id}}? \nLos quedan eliminados no se podran recuperar!')||event.stopImmediatePropagation()" wire:click= "hidenstate({{$row->id}})"><i class="fa fa-plus"></i> eliminar {{$row->id}}</a> --}}

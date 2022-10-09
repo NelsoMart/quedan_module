@@ -16,8 +16,8 @@ class Fuentes extends Migration
         Schema::create('fuentes', function (Blueprint $table) {
             $table->engine="InnoDB";
             $table->bigIncrements('id');
-            $table->string('nombre_fuente');
-            $table->bigInteger('hiden');
+            $table->string('nombre_fuente')->unique();
+            $table->bigInteger('hiden'); // Ojo. debe ser null por default
             $table->timestamps();
         });
     }

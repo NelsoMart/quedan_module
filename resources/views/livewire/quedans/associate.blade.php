@@ -3,9 +3,7 @@
 data-backdrop="static" role="dialog"
     aria-labelledby="associateModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content" 
-        {{-- style="width: 140%" --}}
-        >
+        <div class="modal-content" style="border: rgb(222, 222, 222) 1px solid;">
             <div class="modal-header">
                 <style>
                     .myclass{
@@ -33,19 +31,6 @@ data-backdrop="static" role="dialog"
 
                     @if ($select_facturas != null)
 
-                    {{-- <div class="form-group">
-                    <label for="factura_id"></label>
-                    <span style="font-size: 80%; color: rgb(190, 206, 218)">Factura (ID)</span>
-                    <input wire:model="factura_id" type="text" class="form-control" id="factura_id" placeholder="Factura Id">@error('factura_id') <span class="error text-danger">{{ $message }}</span> @enderror
-                </div> --}}
-
-
-
-                {{-- <div>
-                    <input wire:model='keyWord' style="margin-top: 2%; width: 95%; margin-left: 2%" 
-                         type="text" class="form-control" name="search" 
-                         id="search" placeholder="Buscar Num Factura">
-                </div> --}}
                 <div class="row" style="90%">
                     <div style="float:left; margin-top: 3%; width: 70%; margin-left: 10%;
                                  inline: green solid thin; clear:both">
@@ -143,57 +128,6 @@ data-backdrop="static" role="dialog"
                 })
             </script>
 
-            {{-- <script>
-                $('#associateModal').show('show', function() { // coloca el número de quedan automáticamente
-                    var x = $('.wizard').width();
-                    // $('#associateModal').hide();
-                    console.log('width: ' + x);
-                    // @this.functionNumQd();
-                });
-            </script> --}}
-
-                    {{-- <div>
-                        <input type="text" wire:model='factura_id' name="factura_id" value="factura_id">
-                        Digite la pinche factura    
-                    </div> --}}
-
-
-        {{-- @foreach ( $vendor_permissions as $vendor_permission )
-
-        <td style="width: 15%">
-            <label class="checkbox">
-                <input type="checkbox" name="permissions[]" 
-                       id="{{ $vendor_permission->id }}"
-                       value="{{ $vendor_permission->id }}"  
-                    {{(is_array($assigned_vendor_permissions)&&in_array($vendor_permission->id,$assigned_vendor_permissions))?"checked":null}}
-                >
-                <span>
-                    
-                </span>
-            </label>
-        </td>
-    
-    @endforeach --}}
-
-            {{-- <div class="form-group">
-                <label for="factura_id"></label>
-                <span style="font-size: 80%; color: rgb(177, 200, 216)">Factura (ID)</span>
-                <select data-container="#factura_id" class="form-control  
-                    @error('category') is-invalid @enderror"
-                    style="width: 100%" wire:model="factura_id" id="factura_id">
-                    <option value="">--- Seleccione la factura ---</option>
-                    @foreach ($select_facturas as $selector_factura)
-                    <option value="{{$selector_factura->id}}">
-                          ID: {{$selector_factura->id }} 
-                        • Número: {{$selector_factura['num_fac'] }} 
-                    </option>
-                    @endforeach                   
-                </select>
-                @error('factura_id') <span class="error text-danger">{{ $message
-                    }}</span> @enderror
-            </div> --}}
-
-
             @endif
 
             <div class="modal-footer">
@@ -205,8 +139,11 @@ data-backdrop="static" role="dialog"
                 @endif
                 <button type="button" wire:click.prevent="cancel()" class="btn btn-secondary"
                     data-dismiss="modal">Cancelar</button>
-                <button type="button" wire:click.prevent="StoreDelete_QF()" class="btn btn-primary"
-                    data-dismiss="modal">Guardar</button>
+                    <span wire:click="$emit('openingReport')">
+                        <button type="button" wire:click.prevent="StoreDelete_QF()" class="btn btn-primary"
+                        data-dismiss="modal">Guardar</button>
+                    </span>
+                
             </div>
         </div>
     </div>

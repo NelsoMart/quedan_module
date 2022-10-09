@@ -100,7 +100,7 @@ class Proyectos extends Component
         
         $this->resetInput();
 		$this->emit('closeModal');
-		session()->flash('message', 'Proyecto Successfully created.');
+		session()->flash('message', 'Proyecto creado exitosamente');
     }
 
     public function edit($id)
@@ -127,7 +127,7 @@ class Proyectos extends Component
 
             $this->resetInput();
             $this->updateMode = false;
-			session()->flash('message', 'Proyecto Successfully updated.');
+			session()->flash('message', 'Proyecto actualizado exitosamente');
         }
     }
 

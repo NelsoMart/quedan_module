@@ -17,14 +17,14 @@ class Facturas extends Migration
             $table->engine="InnoDB";
             $table->bigIncrements('id');
             $table->date('fecha_fac');
-            $table->bigInteger('num_fac');
-            $table->decimal('monto');
-            $table->bigInteger('hiden');
+            $table->bigInteger('num_fac');  
+            $table->decimal('monto'); // Importante: debe ser decimal(17,2) 
+            $table->bigInteger('hiden'); // Ojo. debe ser null por default
             $table->bigInteger('added');
             $table->bigInteger('proveedor_id')->unsigned();
             $table->timestamps();
             
-            $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete("cascade");
+            $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete("no action");
         });
     }
 

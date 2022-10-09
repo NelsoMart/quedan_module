@@ -3,7 +3,7 @@
 aria-labelledby="createDataModalLabel" aria-hidden="true">
 {{-- <div wire:ignore.self class="modal fade" id="createDataModal" data-backdrop="static" role="dialog" aria-labelledby="createDataModalLabel" aria-hidden="true"> --}}
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content" style="border: rgb(222, 222, 222) 1px solid;">
             <div class="modal-header">
                 <h5 class="modal-title" id="createDataModalLabel">Nueva Factura</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -30,13 +30,16 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
             </div> --}}
     
             <div class="form-group" wire:ignore>
-                <label for="proveedor_id"></label>
+                <label for="proveedores_id"></label>
                 <select class="form-control" style="width: 100%" wire:model="proveedor_id" id="proveedor_id">
                     <option value="">-- Seleccione el Proveedor --</option>
                      @foreach ($selectores as $selector)
                     <option value="{{$selector['id']}}"> {{ $selector['nombre_proveedor'] }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div style="margin-top: -3%">
+                @error('proveedor_id') <span class="error text-danger">{{ $message }}</span> @enderror
             </div>
 
             {{-- todo: section scripts --}}
@@ -107,11 +110,11 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-btn" wire:click="$emit('refreshSelect2')" data-dismiss="modal">Cancelar</button>
-                <span wire:click="$emit('refreshSelect2')">
+                {{-- <span wire:click="$emit('refreshSelect2')"> --}}
                      <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
-                </span>
-                <button type="button" wire:click="$emit('refreshData')" class="btn">run JavaScript script</button>
-                <button type="button" wire:click="$emit('refreshSelect2')" class="btn">clean selet2</button>
+                {{-- </span> --}}
+                {{-- <button type="button" wire:click="$emit('refreshData')" class="btn">run JavaScript script</button> --}}
+                {{-- <button type="button" wire:click="$emit('refreshSelect2')" class="btn">clean selet2</button> --}}
             </div>
         </div>
     </div>

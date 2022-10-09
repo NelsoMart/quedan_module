@@ -17,7 +17,7 @@ class Proyectos extends Migration
             $table->engine="InnoDB";
             $table->bigIncrements('id');
             $table->string('nombre_proyecto');
-            $table->bigInteger('hiden');
+            $table->bigInteger('hiden'); // Ojo. debe ser null por default
             $table->timestamps();
         });
     }

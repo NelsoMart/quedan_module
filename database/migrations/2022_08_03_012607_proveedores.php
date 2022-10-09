@@ -11,13 +11,14 @@ class Proveedores extends Migration
      *
      * @return void
      */
+    
     public function up()
     {
         Schema::create('proveedores', function (Blueprint $table) {
             $table->engine="InnoDB";
             $table->bigIncrements('id');
-            $table->string('nombre_proveedor');
-            $table->bigInteger('hiden');
+            $table->string('nombre_proveedor')->unique();
+            $table->bigInteger('hiden'); // Ojo. debe ser null por default
             $table->timestamps();
         });
     }

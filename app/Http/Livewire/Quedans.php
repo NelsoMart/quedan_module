@@ -19,23 +19,23 @@ class Quedans extends Component
 	use WithPagination;
 
 	protected $paginationTheme = 'bootstrap';
-	public $selected_id, $keyWord, $keyWordCheck, $num_quedan, $fecha_emi, $cant_num=0, $cant_letra='*SIN ASIGNAR*', $fuente_id, $proyecto_id, $proveedor_id, $hiden;
+	public $selected_id, $keyWord, $keyWordCheck, $num_quedan, $fecha_emi, $cant_num=0, $fuente_id, $proyecto_id, $proveedor_id, $hiden;
 	public $updateMode = false;
+
+	public $cant_letra='*SIN ASIGNAR*'; // ya no existe en db; considerar quitar
 
 
 	public $quedan_id, $ArrayCheckedF = [], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 	// public $quedan_id, $ArrayCheckedF = ['id'=>0, 'added'=>''], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 
 
-	public $select_facturas, $NumQForAssocModal, $NomProvForAssocModal;
+	public $select_facturas, $NumQForAssocModal, $NomProvForAssocModal, $FechaQForAssocModal;
 
 	// public $vendor_permissions = [1,2,3,4], $assigned_vendor_permissions = [1,3];
 
-	public $selected_date;
-	public $monto_fact = "monto";
 	protected $listeners = [
-							  "selectDate" => 'getSelectedDate',
-							  'refreshSelect2' => 'cleanSelect2',
+							  "refreshSelect2" => 'cleanSelect2',
+							  "openingReport" => 'autoOpenReport',
 							];
 
 
@@ -145,6 +145,8 @@ class Quedans extends Component
 
 		$keyWord = '%' . $this->keyWord . '%';
 
+		//? Al buscar un número de quedan se querrá obtener el 
+		//? valor exacto (=), es decir sin coincidencias (like):
 		if($keyWord != "%%" && ($this->paramFilter == "num_quedan" 
 		                    || $this->paramFilter == "cant_num")){
 			$keyWord = $this->keyWord;
@@ -175,7 +177,6 @@ class Quedans extends Component
 							'quedans.id',
 							'quedans.fecha_emi',
 							'quedans.cant_num',
-							'quedans.cant_letra',
 							'quedans.fuente_id',
 							'quedans.proyecto_id', // ####
 							'proyectos.id AS my_projtId','proyectos.nombre_proyecto',
@@ -196,7 +197,8 @@ class Quedans extends Component
 	} //todo: fin render
 
 
-	public function hidenstate($id_quedan){ //* sirve para ocultar los registros en lugar de destruirlos
+	public function hidenstate($id_quedan)
+	{ //* sirve para ocultar los registros en lugar de destruirlos
 
 		//* ocultamos el quedan y reseteando su monto
 		$ocultarQ = Quedan::find($id_quedan);
@@ -230,6 +232,7 @@ class Quedans extends Component
 
 	public function Get_numberWords()
 	{ //* función para convertir números en letras
+		//todo: revisar si este método ya no está siendo utilizado, y quitar.
 		$arr = explode(".", $this->cant_num);
 		$entero = $arr[0];
 		if (isset($arr[1])) {
@@ -256,22 +259,23 @@ class Quedans extends Component
 	{
 		$this->resetInput();
 		$this->updateMode = false;
+		// $this->emit('closeModal');
 	}
 
 	private function resetInput()
 	{
 		// $this->num_quedan = null;
 		// $this->fecha_emi = null;
-		// $this->cant_num = null;
 		$this->cant_num = 0;
-		$this->cant_letra = '*SIN ASIGNAR*';
 		$this->fuente_id = null;
 		$this->proyecto_id = null;
 		$this->select_facturas = null;
 		$this->keyWordCheck = null; // used in associatemodal to search filter
 		$this->NomProvForAssocModal = null;
-		$this->NumQForAssocModal = null;
+		// $this->NumQForAssocModal = null; // no recetear aquí porque se ocupará in open report autolink
 		$this->functionNumQd();
+        $this->emit('closeModal');
+		$this->resetErrorBag();
 	}
 
 	//! ########
@@ -322,7 +326,7 @@ class Quedans extends Component
 					# dd('¿verdadero?', $checkState);
 					if ($Myfact == '[]') {
 						//? Si la factura no está insertada, será un registro NUEVO en quedanfacturas
-						 dd('No hay factura en quedanfacturas para este id', $MyFactIds);
+						//  dd('No hay factura en quedanfacturas para este id', $MyFactIds);
 						//? creando el registro en quedanfactura
 							Quedanfactura::create([ 
 								'factura_id' => $factura_id,
@@ -350,7 +354,7 @@ class Quedans extends Component
 								if ($MyFactura->hiden != 1) { #hiden de 'quedanfacturas'. added no va porque es más seguro sólo con hiden 
 
 									//? ** La factura esté visible (hiden= 0||null). Entonces NO se ejecuta ningua acción
-									 dd('factura ya existe y está visible.', 'facturas added:', $MyFactura->added, 'quedanfacturas hiden:', $MyFactura->hiden);
+									//  dd('factura ya existe y está visible.', 'facturas added:', $MyFactura->added, 'quedanfacturas hiden:', $MyFactura->hiden);
 									return null;
 
 								} else { // hiden=1, implica registro oculto.
@@ -624,13 +628,11 @@ class Quedans extends Component
 	public function store()
 	{ // Se llama cuando se crea un quedan
 		// dd('numq',$this->num_quedan,'fechae',$this->fecha_emi,'cantNu',$this->cant_num,
-		//   'cantLet',$this->cant_letra,
 	    //    'fuente',$this->fuente_id,'proj',$this->proyecto_id,'prov',$this->proveedor_id );
 		$this->validate([
 			'num_quedan' => 'required',
 			'fecha_emi' => 'required',
 			'cant_num' => 'required',
-			'cant_letra' => 'required',
 			'fuente_id' => 'required|min:1|',
 			'proyecto_id' => 'required|min:1|',
 			'proveedor_id' => 'required|min:1|',
@@ -640,13 +642,17 @@ class Quedans extends Component
 			'num_quedan' => $this->num_quedan,
 			'fecha_emi' => $this->fecha_emi,
 			'cant_num' => $this->cant_num,
-			'cant_letra' => $this->cant_letra,
 			'fuente_id' => $this->fuente_id,
 			'proyecto_id' => $this->proyecto_id,
 			'proveedor_id' => $this->proveedor_id
 		]);
 
-		$this->resetInput();
+		// $this->emit('select2Send');
+        // $this->reset(['proveedor_id']);
+
+		$this->cleanSelect2();
+
+		// $this->resetInput();
 		$this->emit('closeModal');
 		session()->flash('message', 'Quedan creado satisfactoriamente.');
 	}
@@ -663,6 +669,12 @@ class Quedans extends Component
 		$this->NumQForAssocModal = Quedan::select('num_quedan')
 		->where('id', $quedan_id)
 		->value('num_quedan');
+		// return $this->NumQForAssocModal; // no descomentar
+
+		//? Se obtiene el la fecha de quedan, pero en realidad sólo es para autoabrir report print
+		$this->FechaQForAssocModal = Quedan::select('fecha_emi')
+		->where('id', $quedan_id)
+		->value('fecha_emi');
 		// return $this->NumQForAssocModal; // no descomentar
 
 		//? Se obtiene el nombre del proveedor
@@ -766,7 +778,7 @@ class Quedans extends Component
 	  //? cargará los campos de updateModal con los valores que se obtengan 
 		//? de la búsqueda por id seleccionado
 
-		//? Hará una consulta para obtener la lista de proveedores asociadas con el quedan
+		//? Se hará una consulta para obtener la lista de proveedores asociadas con el quedan
 		$this->select_facturas = Factura::join('quedanfacturas', 'facturas.id', '=', 'quedanfacturas.factura_id')
 				->select('facturas.id AS MyidF','facturas.fecha_fac','facturas.num_fac','facturas.monto')
 				->where('quedanfacturas.quedan_id', '=', $id)
@@ -779,7 +791,6 @@ class Quedans extends Component
 		$this->num_quedan = $record->num_quedan; // aquí como en los demás, recorrerá el array $record hasta la posición num_quedan para asignarlo
 		$this->fecha_emi = $record->fecha_emi;
 		$this->cant_num = $record->cant_num;
-		$this->cant_letra = $record->cant_letra;
 		$this->fuente_id = $record->fuente_id;
 		$this->proyecto_id = $record->proyecto_id;
 		$this->proveedor_id = $record->proveedor_id;
@@ -795,7 +806,6 @@ class Quedans extends Component
 			'num_quedan' => 'required',
 			'fecha_emi' => 'required',
 			'cant_num' => 'required',
-			'cant_letra' => 'required',
 			'fuente_id' => 'required',
 			'proyecto_id' => 'required',
 			'proveedor_id' => 'required',
@@ -808,7 +818,6 @@ class Quedans extends Component
 				'num_quedan' => $this->num_quedan,
 				'fecha_emi' => $this->fecha_emi,
 				'cant_num' => $this->cant_num,
-				'cant_letra' => $this->cant_letra,
 				'fuente_id' => $this->fuente_id,
 				'proyecto_id' => $this->proyecto_id,
 				'proveedor_id' => $this->proveedor_id
@@ -828,19 +837,50 @@ class Quedans extends Component
 		}
 	}
 
-    public function cleanSelect2() //? para limpiar los select2
+
+
+	public function autoOpenReport()
+	{ 
+
+		$MyCantNum = $this->NumQForAssocModal;
+		$MyFechQ = $this->FechaQForAssocModal;
+
+		$datos_quedan = Quedan::select('id','cant_num')
+		->where('num_quedan', '=', $MyCantNum)
+		->where('fecha_emi', '=', $MyFechQ)
+		->get();
+
+		$MyIdQdn= 0;
+		$MyCantQdn= '';
+		
+		foreach ($datos_quedan as $value) {
+			
+			$MyIdQdn = $value->id;
+			$MyCantQdn = $value->cant_num;
+
+		}
+		
+		if($MyIdQdn != 0 && $MyCantQdn != '') {
+			return redirect()->route('print_quedan', [$MyIdQdn, $MyCantQdn]);
+		} else {
+			return null;
+		}
+
+		// dd( 'MyIdQdn:', $MyIdQdn,'MyCantQdn:', $MyCantQdn);
+
+
+       // return redirect()->route('Http\Controllers\PdfController@index', [$id, $cant_num]);
+		// return redirect()->route('print_quedan', [$id, $cant_num]);
+
+	}
+
+	public function cleanSelect2() //? para limpiar los select2
     {  
-
-           $id = 52;
-		   $cant_num = 7010;
-
-        $this->emit('select2Send'); // enviamos un parametro 1, solo para ver cómo funcionan los parámetros
+        $this->emit('select2Send'); //para reinicializar los select2
         $this->reset(['fuente_id']);
         $this->reset(['proyecto_id']);
         $this->reset(['proveedor_id']);
-		
-		// return redirect()->route('Http\Controllers\PdfController@index', [$id, $cant_num]);
-		// return redirect()->route('print_quedan', [$id, $cant_num]);
+		$this->resetInput();
 
     }
 }

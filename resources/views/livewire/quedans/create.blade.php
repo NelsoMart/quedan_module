@@ -2,7 +2,7 @@
 <div wire:ignore.self class="modal fade" id="createDataModal" data-backdrop="static" role="dialog"
     aria-labelledby="createDataModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content" style="border: rgb(222, 222, 222) 1px solid;">
             <div class="modal-header">
                 <h5 class="modal-title" id="createDataModalLabel">Nuevo Quedan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -42,16 +42,6 @@
                             placeholder="Escriba...">@error('cant_num') <span class="error text-danger">{{ $message
                             }}</span> @enderror
                     </div> --}}
-                    {{-- //todo cant_letra --}}
-                    {{-- <div class="form-group">
-                        <label for="cant_letra"></label>
-                        <span style="font-size: 80%; color: rgb(190, 206, 218)">Cantidad en letra</span>
-                        <input wire:model="cant_letra" type="text"
-                            class="form-control" id="cant_letra" placeholder="Escriba...">
-                            @error('cant_letra') 
-                            <span class="error text-danger">{{ $message}}</span> 
-                            @enderror
-                    </div> --}}
 
                     {{-- ! divs with ids --}}
 
@@ -66,6 +56,9 @@
                             @endforeach
                         </select>
                     </div>
+                    <div style="margin-top: -3%">
+                        @error('fuente_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
 
                      {{-- //todo proyecto_id --}}
                     <div  class="form-group" wire:ignore>
@@ -79,6 +72,9 @@
                             @endforeach
                         </select>
                     </div>
+                    <div style="margin-top: -3%">
+                        @error('proyecto_id') <span class="error text-danger">{{ $message }}</span> @enderror
+                    </div>
 
                      {{-- //todo proveedor_id --}}
                     <div  class="form-group" wire:ignore>
@@ -91,6 +87,9 @@
                             {{-- @dd($selector) --}}
                             @endforeach
                         </select>
+                    </div>
+                    <div style="margin-top: -3%">
+                        @error('proveedor_id') <span class="error text-danger">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- ! scripts --}}
@@ -167,9 +166,9 @@
             {{-- //todo Buttons --}}
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary close-btn" wire:click="$emit('refreshSelect2')" data-dismiss="modal">Cancelar</button>
-                <span wire:click="$emit('refreshSelect2')">
+                {{-- <span wire:click="$emit('refreshSelect2')"> --}}
                     <button type="button" wire:click.prevent="store()" class="btn btn-primary close-modal">Guardar</button>
-               </span>
+               {{-- </span> --}}
             </div>
         </div>
     </div>
@@ -178,7 +177,7 @@
 <script>
     window.onload = function(){ // found
         Livewire.on('select2Send',() => {
-
+            // Limpiando los selectores:
             $('#fuente_id').select2({
                         placeholder: "-- Seleccione el tipo de fuente --",
                         allowClear: true
@@ -193,6 +192,6 @@
                         placeholder: "-- Seleccione el Proveedor --",
                         allowClear: true
                    }); //inicializar
-        })
+        });
     }
 </script>

@@ -15,6 +15,8 @@ class Fuentes extends Component
 
 	protected $paginationTheme = 'bootstrap';
     public $selected_id, $keyWord, $nombre_fuente, $hiden;
+    public $old_nomFuente;
+
     public $updateMode = false;
 
     public function render()
@@ -85,18 +87,21 @@ class Fuentes extends Component
     {
         $this->resetInput();
         $this->updateMode = false;
+        // $this->emit('closeModal');
     }
 	
     private function resetInput()
     {		
 		$this->nombre_fuente = null;
+        $this->emit('closeModal');
+        $this->resetErrorBag();
     }
 
     public function store()
     {
         $this->validate([
-		'nombre_fuente' => 'required',
-        ]);
+		'nombre_fuente' => ['required', 'unique:fuentes']
+          ], ['unique'=>'Esta Fuente ya está registrada']);
 
         Fuente::create([ 
 			'nombre_fuente' => $this-> nombre_fuente
@@ -104,7 +109,7 @@ class Fuentes extends Component
         
         $this->resetInput();
 		$this->emit('closeModal');
-		session()->flash('message', 'Fuente Successfully created.');
+		session()->flash('message', 'Fuente creada exitosamente.');
     }
 
     public function edit($id)
@@ -113,25 +118,33 @@ class Fuentes extends Component
 
         $this->selected_id = $id; 
 		$this->nombre_fuente = $record-> nombre_fuente;
+		$this->old_nomFuente = $record-> nombre_fuente;
 		
         $this->updateMode = true;
     }
 
     public function update()
     {
-        $this->validate([
-		'nombre_fuente' => 'required',
-        ]);
 
-        if ($this->selected_id) {
-			$record = Fuente::find($this->selected_id);
-            $record->update([ 
-			'nombre_fuente' => $this-> nombre_fuente
-            ]);
+        if ($this->old_nomFuente == $this->nombre_fuente) { //* si se intenta guardar sin hacer cambios en el nombre de origen
+            $this->emit('closeModal');
+        }
 
-            $this->resetInput();
-            $this->updateMode = false;
-			session()->flash('message', 'Fuente Successfully updated.');
+        if ($this->old_nomFuente != $this->nombre_fuente) {
+
+            $this->validate([
+                'nombre_fuente' => ['required', 'unique:fuentes']
+            ], ['unique' => 'Esta Fuente ya está registrada']);
+
+            if ($this->selected_id) {
+                $record = Fuente::find($this->selected_id);
+                $record->update([
+                    'nombre_fuente' => $this->nombre_fuente
+                ]);
+                $this->resetInput();
+                $this->emit('closeModal');
+                session()->flash('message', 'Registro actualizado exitosamente.');
+            }
         }
     }
 

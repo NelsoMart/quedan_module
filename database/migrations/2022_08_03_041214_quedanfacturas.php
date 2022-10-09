@@ -20,7 +20,7 @@ class QuedanFacturas extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('factura_id')->unsigned();
             $table->bigInteger('quedan_id')->unsigned();
-            $table->bigInteger('hiden');
+            $table->bigInteger('hiden'); // Ojo. debe ser null por default
         
             $table->foreign('factura_id')->references('id')->on('facturas')->onDelete('cascade');
             $table->foreign('quedan_id')->references('id')->on('quedans')->onDelete('cascade');

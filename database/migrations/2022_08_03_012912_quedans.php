@@ -18,9 +18,8 @@ class Quedans extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('num_quedan');
             $table->date('fecha_emi');
-            $table->decimal('cant_num');
-            $table->string('cant_letra');
-            $table->bigInteger('hiden');
+            $table->decimal('cant_num'); // Importante: debe ser decimal(17,2)
+            $table->bigInteger('hiden'); // Ojo. debe ser null por default
 
       // // $table->bigInteger('factura_id')->unsigned();
             $table->bigInteger('fuente_id')->unsigned();
@@ -29,9 +28,9 @@ class Quedans extends Migration
             $table->timestamps();
             
       // // $table->foreign('factura_id')->references('id')->on('facturas')->onDelete("cascade");
-            $table->foreign('fuente_id')->references('id')->on('fuentes')->onDelete("cascade");
-            $table->foreign('proyecto_id')->references('id')->on('proyectos')->onDelete("cascade");
-            $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete("cascade");
+            $table->foreign('fuente_id')->references('id')->on('fuentes')->onDelete("no action");
+            $table->foreign('proyecto_id')->references('id')->on('proyectos')->onDelete("no action");
+            $table->foreign('proveedor_id')->references('id')->on('proveedores')->onDelete("no action");
         });
     }
 
