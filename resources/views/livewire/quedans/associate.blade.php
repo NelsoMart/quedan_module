@@ -41,19 +41,23 @@
                     </div>
                 </div>
                 <div class="modal-body">
+                    <div>
+                        <input type="checkbox" wire:model='selectAll'>
+                    </div>
                     {{-- todo: div Input CheckBox --}}
                     <div class="checkbox">
                         @foreach ($select_facturas as $index => $selector_factura)
                         <div class="mt-3" style="margin-bottom: 3%; 
                                                         margin-top: 4%; margin-left: 4%">
                             <input type="checkbox" class="form-checkbox"
-                                wire:model.defer="ArrayCheckedF.{{ $selector_factura->id }}">
-                            {{-- <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span> --}}
-                            {{-- <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span> --}}
+                                   wire:model.defer="ArrayCheckedF.{{ $selector_factura->id }}"
+                                   >
+
+                            <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
+                            <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span>
                             <span class="ml-3 text-sm">Núm: {{ $selector_factura->num_fac }}</span>
                             <span class="ml-3 text-sm">Monto: {{ number_format($selector_factura->monto, 2) }}</span>
-                            <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac))
-                                }}</span>
+                            {{-- <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span> --}}
                         </div>
                         @endforeach
                     </div>

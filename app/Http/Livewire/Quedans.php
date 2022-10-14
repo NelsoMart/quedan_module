@@ -27,6 +27,8 @@ class Quedans extends Component
 
 	public $quedan_id, $ArrayCheckedF = [], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 	// public $quedan_id, $ArrayCheckedF = ['id'=>0, 'added'=>''], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
+	public $selectAll = false;
+	public $bulkDisabled = true;
 
 
 	public $select_facturas, $NumQForAssocModal, $NomProvForAssocModal, $FechaQForAssocModal;
@@ -276,13 +278,13 @@ class Quedans extends Component
 
 	public function StoreDelete_QF()
 	{ // Es llamado al momento de guardar la lista de chequeo de facturas en 'associate.blade'
-
+		//! ####################
 		$this->validate([
 			// 'factura_id' => 'required',
 			'quedan_id' => 'required',
 			]);
 			
-			# dd([$this->ArrayCheckedF]);
+		// dd([$this->ArrayCheckedF]);
 
 
 			foreach ($this->ArrayCheckedF as $MyFactIds => $checkState) {
@@ -438,6 +440,7 @@ class Quedans extends Component
  
 	public function editQF($quedan_id, $proveedor_id) 
 	{ //* Es llamado cuando se presiona el botón 'asociar', en view de quedan
+		//! ####################
 		
 		// $this->dispatchBrowserEvent('contentChanged');
 
@@ -475,9 +478,12 @@ class Quedans extends Component
 				})
 				->orderBy('num_fac', 'desc')->get();
 
+				$another = ['true','true','true','true','true','true','true','true','true','true',];
+
 			//* --------------------------- Precargando ArrayCheckedF --------------------
 				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array puede crecer;
 				$this->ArrayCheckedF = $this->select_facturas->pluck('added','id');
+				// $this->ArrayCheckedF = $this->ArrayCheckedF->pluck($another);
 
 				//? Bajo esta forma se crea un array que obtiene SÓLO los ids con added=1 reduciendo considerablemente el tamaño del array; pero esto implica hacer otra consulta a la base de datos.
 				// $Misfacturas = Factura::select('id','added')
