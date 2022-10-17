@@ -66,7 +66,7 @@
 							<thead class="thead">
 								<tr>
 									{{-- <td>#</td> --}}
-									{{-- <th>ID</th> --}}
+									<th>ID</th>
 									<th>Número</th>
 									<th>Monto</th>
 									<th>Fecha</th>
@@ -78,7 +78,7 @@
 								@foreach($facturas as $row)
 								<tr>
 									{{-- <td>{{ $loop->iteration }}</td> --}}
-									{{-- <td>{{ $row->id }}</td> --}}
+									<td>{{ $row->id }}</td>
 									<td>{{ $row->num_fac }}</td>
 									<td>$ {{ number_format($row->monto, 2) }}</td>
 									{{-- <td>{{ $row->fecha_fac }}</td> --}}
@@ -96,7 +96,7 @@
 
 											<div class="dropdown-menu dropdown-menu-right">
 												<a data-toggle="modal" data-target="#updateModal" class="dropdown-item"
-													wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar
+													wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Modificar
 												</a>
 												@if($row->added > 0)
 												<a class="dropdown-item" onclick="confirm('¿Confirma que desea eliminar la Factura Nº {{$row->num_fac}}? \n\nEsta factura está asociada a un quedan, al aceptar eliminar, se descontará el monto al quedan que está asociada.')

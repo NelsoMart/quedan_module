@@ -21,6 +21,10 @@ class Facturas extends Component
     public $selected_id, $keyWord, $fecha_fac, $num_fac, $monto, $proveedor_id, $hiden, $added=0; //added debe ser 0 por default
 
     public $old_monto;
+    public $old_num_fac;
+    
+    
+    public $blackErr = false;
 
 
     protected $listeners = [
@@ -182,6 +186,7 @@ class Facturas extends Component
 		$this->monto = null;
 		$this->proveedor_id = null;
 		$this->added = 0;
+		$this->blackErr = false;
 
         $this->resetErrorBag();
         $this->emit('closeModal');
@@ -194,7 +199,7 @@ class Facturas extends Component
     public function store()
     {
 
-        // $proveedores = Proveedore::pluck('id', 'nombre_proveedor');
+        $this->blackErr = false;
 
         $this->validate([
 		'fecha_fac' => 'required',
@@ -203,21 +208,33 @@ class Facturas extends Component
 		'proveedor_id' => 'required',
         ]);
 
-        Factura::create([ 
-			'fecha_fac' => $this-> fecha_fac,
-			'num_fac' => $this-> num_fac,
-			'monto' => $this-> monto,
-			'proveedor_id' => $this-> proveedor_id,
-			'added' => 0 // added debe ser 0 por defecto
-        ]);
-        
-        // $this->emit('select2Send');
-        // $this->reset(['proveedor_id']);
-        $this->cleanSelect2();
+        $result_numfac = Factura::select('num_fac')
+        ->where('num_fac', '=', $this->num_fac)
+        ->where('proveedor_id', '=', $this->proveedor_id)
+        ->value('num_fac');
 
-        // $this->resetInput();
-		$this->emit('closeModal');
-		session()->flash('message', 'Factura creada con éxito');
+        // dd($result_numfac);
+        if($result_numfac != null){
+            // dd('ya existe');
+            // $this->validate([ 'num_fac' => 'different:facturas']);
+            $this->blackErr = true;
+             // return null;
+        }else {
+            // dd('no existe');
+            Factura::create([ 
+                'fecha_fac' => $this-> fecha_fac,
+                'num_fac' => $this-> num_fac,
+                'monto' => $this-> monto,
+                'proveedor_id' => $this-> proveedor_id,
+                'added' => 0 // added debe ser 0 por defecto
+            ]);
+            
+            $this->cleanSelect2();
+            $this->emit('closeModal');
+            session()->flash('message', 'Factura creada con éxito');
+        }
+        
+        
     }
 
     public function edit($id)
@@ -236,8 +253,9 @@ class Facturas extends Component
 		$this->num_fac = $record-> num_fac;
 		$this->monto = $record-> monto;
 		$this->proveedor_id = $record-> proveedor_id;
-        //asignando monto a old_monto
+        //asignando monto y num_fac a old values
 		$this->old_monto = $record-> monto;
+		$this->old_num_fac = $record-> num_fac;
 
         $this->updateMode = true;
         
@@ -247,6 +265,8 @@ class Facturas extends Component
     { // Se llama al precionar el botón para guardar los cambios de una actualización
 
         // dd("break down");
+
+        $this->blackErr = false;
 
         $this->validate([
 		'fecha_fac' => 'required',
@@ -260,40 +280,70 @@ class Facturas extends Component
 
         if ($this->selected_id) {
 
+            if ($this->old_num_fac == $this->num_fac) { //* si se intenta guardar sin hacer cambios en el nombre de origen
+                $this->emit('closeModal');
+            }
+
+            if ($this->old_num_fac != $this->num_fac) { //* si se intenta guardar sin hacer cambios en el nombre de origen
+
+                $result_numfac = Factura::select('num_fac')
+                ->where('num_fac', '=', $this->num_fac)
+                ->where('proveedor_id', '=', $this->proveedor_id)
+                ->value('num_fac');
+        
+                // dd($result_numfac);
+                if($result_numfac != null){
+                    // dd('ya existe');
+                    // $this->validate([ 'num_fac' => 'different:facturas']);
+                    $this->blackErr = true;
+                     // return null;
+                }else {
+
             // dd('old monto', $this->old_monto,'new monto', $this->monto);
 
             //*? ---------- Actualizando monto total del Quedan -----------
-                if($this->monto != $this->old_monto){
+            if($this->monto != $this->old_monto){
 
-                    // dd('here!');
+                // dd('here!');
 
-                    //* obtenemos quedan_id  "extrayéndolo" de la tabla Quedanfacturas
-                    $MyIDQdn = Quedanfactura::select('quedan_id')
-                    ->where('factura_id', $this->selected_id)
-                    ->value('quedan_id');
+                //* obtenemos quedan_id  "extrayéndolo" de la tabla Quedanfacturas
+                $MyIDQdn = Quedanfactura::select('quedan_id')
+                ->where('factura_id', $this->selected_id)
+                ->value('quedan_id');
 
-                    //* decrementamos la cantidad antigua al quedan respectivo, 
-                    $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
-                    $decrement->decrement('cant_num', $this->old_monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+                if($MyIDQdn != null){
+                    // dd('not null here', $MyIDQdn, $this->selected_id);
+                //* decrementamos la cantidad antigua al quedan respectivo,
+                //?  id de quedan fue obtenido de quedanfacturas
+                $decrement = Quedan::find($MyIDQdn); 
+                //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+                $decrement->decrement('cant_num', $this->old_monto); 
 
-                    //* incrementamos la nueva cantidad al quedan respectivo
-                    $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
-                    $decrement->increment('cant_num', $this->monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+                //* incrementamos la nueva cantidad al quedan respectivo
+                $decrement = Quedan::find($MyIDQdn); //?  id de quedan obtenido de quedanfacturas
+                $decrement->increment('cant_num', $this->monto); //? resta el monto en el campo específico de quedan igual al selecionado en delete.
+                } else {
+                    // dd('null here', $MyIDQdn, $this->selected_id);
                 }
-            //? -----------------------------------------------------------------------------
+            }
+        //? -----------------------------------------------------------------------------
 
 
-			$record = Factura::find($this->selected_id);
-            $record->update([ 
-			'fecha_fac' => $this-> fecha_fac,
-			'num_fac' => $this-> num_fac,
-			'monto' => $this-> monto,
-			'proveedor_id' => $this-> proveedor_id
-            ]);
+        $record = Factura::find($this->selected_id);
+        $record->update([ 
+        'fecha_fac' => $this-> fecha_fac,
+        'num_fac' => $this-> num_fac,
+        'monto' => $this-> monto,
+        'proveedor_id' => $this-> proveedor_id
+        ]);
 
-            $this->resetInput();
-            $this->updateMode = false;
-			session()->flash('message', 'Factura Successfully updated.');
+        $this->resetInput();
+        $this->updateMode = false;
+        session()->flash('message', 'Factura Successfully updated.');
+                }
+            }
+
+            
         }
     }
 

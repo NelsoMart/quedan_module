@@ -117,7 +117,7 @@
 									{{-- <a  class="dropdown-item" href="{{url('quedans/pdf')}}"><i class="fa fa-print"></i> Imprimir </a>							  --}}
 									<a data-toggle="modal" data-target="#associateModal" class="dropdown-item" wire:click="editQF({{$row->id}}, {{$row->my_proveeId}})"><i style="color: rgb(113, 198, 126)" class="fas fa-file-invoice-dollar"></i> Asociar Facturas </a>							 
 									<a class="dropdown-item" href="{{action('App\Http\Controllers\PdfController@index', [$row->id, $row->cant_num])}}" target="_blank"><i style="color: darkgoldenrod" class="fa fa-print"></i> Imprimir </a>							 	
-									<a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}}, {{$row->my_proveeId}})"><i style="color: deepskyblue" class="fa fa-edit"></i> Editar </a>							 
+									<a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}}, {{$row->my_proveeId}})"><i style="color: deepskyblue" class="fa fa-edit"></i> Modificar </a>							 
 									<a class="dropdown-item" onclick="confirm('Confirmar Eliminación Quedan id {{$row->id}}? \nSeguro que quieres eliminarlo!')||event.stopImmediatePropagation()" wire:click="hidenstate({{$row->id}})"><i style="color: firebrick" class="fa fa-trash"></i> Eliminar </a>   
 									{{-- <a  class="dropdown-item" onclick="confirm('Quieres eliminar el quedan? {{$row->id}}? \nLos quedan eliminados no se podran recuperar!')||event.stopImmediatePropagation()" wire:click= "hidenstate({{$row->id}})"><i class="fa fa-plus"></i> eliminar {{$row->id}}</a> --}}
 									</div>

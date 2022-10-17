@@ -65,7 +65,7 @@
                         <label for="proyecto_id"></label>
                         <span style="font-size: 80%; color: rgb(190, 206, 218)">Proyecto (ID)</span>
                         <select class="form-control" style="width: 100%" wire:model="proyecto_id" id="proyecto_id">
-                            <option value="">--- Seleccione el Proyecto ---</option>
+                            <option value="">--- Sin proyecto ---</option>
                             @foreach ($select_proyectos as $selector_fuentes)
                             <option value="{{$selector_fuentes['id']}}"> {{ $selector_fuentes['nombre_proyecto'] }}</option>
                             {{-- @dd($selector) --}}

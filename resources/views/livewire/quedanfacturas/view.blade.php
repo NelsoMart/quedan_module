@@ -111,7 +111,7 @@
 									<a class="dropdown-item" href="{{action('App\Http\Controllers\PdfController@index', [$row->my_quedanId, $row->cant_num])}}"><i style="color: rgb(99, 203, 153)" class="fa fa-print"></i> Imprimir </a>							 
 									{{-- //! respecto a editar quedanfactura, ¡funciona! El único inconveniente es que, no hay forma (lógica) de actualizar la cantidad numérica en quedan (tabla) propiamente, al compás del edit--}}
 									{{-- //! se puede editar quedanfactura al descomentar la linea de abajo, pero cuando se edite, la cantidad numérica de quedan (tabla), quedará ilógica, porque no se modificará, no hay método para eso. Lo cual sería un error grave --}}
-									{{-- <a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Editar </a>							  --}}
+									{{-- <a data-toggle="modal" data-target="#updateModal" class="dropdown-item" wire:click="edit({{$row->id}})"><i class="fa fa-edit"></i> Modificar </a>							  --}}
 									<a class="dropdown-item" onclick="confirm('Confirmar Eliminación Quedanfactura id {{$row->id}}? \nSeguro que quieres eliminarlo!')||event.stopImmediatePropagation()" wire:click= "hidenstate({{$row->id}},{{$row->my_quedanId}},{{$row->my_factId}})"><i style="color: firebrick" class="fa fa-trash"></i> Eliminar </a>   
 									{{-- <a class="dropdown-item" onclick="confirm('Confirm Delete Quedanfactura id {{$row->id}}? \nDeleted Quedanfacturas cannot be recovered!')||event.stopImmediatePropagation()" wire:click="destroy({{$row->id}})"><i class="fa fa-trash"></i> Eliminar </a>    --}}
 									</div>

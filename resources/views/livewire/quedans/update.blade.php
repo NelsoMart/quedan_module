@@ -28,39 +28,11 @@
                             placeholder="Fecha Emi">@error('fecha_emi') <span class="error text-danger">{{ $message
                             }}</span> @enderror
                     </div>
-                    {{-- <div class="form-group">
-                        <span style="font-size: 80%; color: rgb(190, 206, 218)">Cantidad en número</span>
-                        <label for="cant_num"></label>
-                        <input wire:model="cant_num" type="number" class="form-control" id="cant_num"
-                            placeholder="Cant Num">@error('cant_num') <span class="error text-danger">{{ $message
-                            }}</span> @enderror
-                    </div> --}}
-                    
-                  {{-- todo: section IDs --}}
 
-                    {{-- * select2_1 fuente id (queda uno para recordar la forma del doble selector) --}}
-                       {{-- <div class="form-group" wire:ignore id="fuente_id">
-                        <label for="fuente_id"></label>
-                        <span style="font-size: 80%; color: rgb(190, 206, 218)">Fuente de financiamiento (ID)</span>
-                        <select class="form-control" style="width: 100%" data-container="#fuente_id" disabled
-                            wire:model="fuente_id" id="fuente_id">
-                            @foreach ($select_fuentes as $selector_fuentes)
-                            <option value="{{$selector_fuentes['id']}}"> {{ $selector_fuentes['nombre_fuente'] }}</option>
-                            @endforeach
-                        </select>
-                        <select class="input-group" style="width: 265" data-container="#fuente_id"
-                            wire:model="fuente_id" id="select2_1">
-                            <option value="">--- Buscar por Nombre de Fuente ---</option>
-                            @foreach ($select_fuentes as $selector_fuentes)
-                            <option value="{{$selector_fuentes['id']}}"> {{ $selector_fuentes['nombre_fuente'] }}</option>
-                            @endforeach
-                        </select>
-                    </div> --}}
-
-                    
-                    @if ($this->updateMode == true)
+                    {{-- @if ($this->updateMode == true) --}}
+                    {{-- ? las opciones dentro de este if funcionan --}}
                         {{-- * select2_1 fuente id --}}
-                        <div class="from-group" wire:ignore>
+                        {{-- <div class="from-group" wire:ignore>
                             <div>
                                 <span style="color: lightgray">Fuente</span>
                                 <select wire:model="fuente_id" class="form-control"  id="select2_1">
@@ -69,9 +41,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
                         {{-- * select2_2 proyecto id --}}
-                        <div class="from-group" wire:ignore style="margin-top: 3%">
+                        {{-- <div class="from-group" wire:ignore style="margin-top: 3%">
                             <div>
                                 <span style="color: lightgray">Proyecto</span>
                                 <select wire:model="proyecto_id" class="form-control"  id="select2_2">
@@ -80,9 +52,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
                         {{-- * select2_3 proveedor id --}}
-                        <div class="from-group" wire:ignore style="margin-top: 3%">
+                        {{-- <div class="from-group" wire:ignore style="margin-top: 3%">
                             <div>
                                 <span style="color: lightgray">Proveedor</span>
                                 <select wire:model="proveedor_id" class="form-control"  id="select2_3">
@@ -91,34 +63,11 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-                    @endif
+                        </div> --}}
+                    {{-- @endif --}}
 
-             {{-- todo: section scripts --}}
-
-                    {{-- * script fuente id --}}
-                    {{-- <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            $('#select2_1').select2({
-                                width: '265', // ? esto permite que el ancho del select2 se mantenga fijo siempre
-                                placeholder: "-- Buscar por Nombre de Fuente --",
-                                allowClear: true
-                            }); //inicializar
-                            //Captura el valor en el evento change
-                            $('#select2_1').on('change', function(e) { //? select2_1
-                                select2_1:open
-                                var pId = $('#select2_1').select2("val"); //get proveedor id //? select2_1
-                                @this.set('fuente_id', pId)
-                                livewire.on('scan-code', action => {
-                                    console.log(pId);
-                                    $('#fuente_id').select2('')
-                                });
-                                
-                            });
-                        });
-                    </script> --}}
-
-                    @if ($updateMode == true)
+                    {{-- ? este if funciona y debe descomentarse cuando se descomente el if de arriba --}}
+                    {{-- @if ($updateMode == true)
                     <script>
                         $('#select2_1').select2({
                             placeholder: "-- Buscar Nombre de la Fuente --",
@@ -161,71 +110,7 @@
                             });
                         });
                     </script>
-                @endif
-
-                   
-
-                    {{-- <script>
-                        $timeout(function(){
-                    $(document).ready(function() {
-                    $('#select2').select2();
-                    $('#select2').on('change', function (e) {
-                        var data = $('#select2').select2("val");
-                        @this.set('proyecto_id', data);
-                    });
-                });
-                    }, 50);
-
-                </script> --}}
-
-
-                    {{-- <script>
-                        document.addEventListener("DOMContentLoaded", () => {
-                    Livewire.hook('message.received', (message, component) => {
-                        $('proyecto_id').select2('refresh');
-                    })
-                });
-
-                window.addEventListener('contentChanged', event => {
-                    $('#proyecto_id').selectpicker('refresh');
-                });
-                    </script> --}}
-
-
-                    {{-- <script>
-                        window.addEventListener('contentChanged', event => {
-                        // $('#proyecto_id').select2();
-                        $("#proyecto_id").select2("destroy");
-                        $("#proyecto_id").select2();
-                });
-                    </script>
-
-                    <script>
-                        document.addEventListener("livewire:load", function (event) {
-            window.livewire.hook('afterDomUpdate', () => {
-                let proyecto_id = @this.get('proyecto_id')
-                $('#proyecto_id').val(proyecto_id).trigger('change');
-            });
-        });
-                    </script> --}}
-
-
-
-
-                    {{-- @push('scripts')
-                    <script>
-                        $(document).ready(function () {
-                    //todo: este script funciona
-                    $('proyecto_id').select2();
-                    $(document).on('change', '#select2', function (e) {
-                        //when ever the value of changes this will update your PHP variable 
-                        @this.set('proyecto_id', e.target.value);
-                    });
-                });
-                    </script>
-                    @endpush --}}
-
-
+                @endif --}}
                 </form>
             </div>
             <div class="modal-footer">

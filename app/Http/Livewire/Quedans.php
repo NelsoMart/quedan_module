@@ -29,6 +29,10 @@ class Quedans extends Component
 	// public $quedan_id, $ArrayCheckedF = ['id'=>0, 'added'=>''], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 	public $selectAll = false;
 	public $bulkDisabled = true;
+	public $selectedBoxes = [true, true, true, true, true,true, true,true,true,true,
+	                          true,true,true,true,true,true,true,true];
+
+	public $WithOutProject;
 
 
 	public $select_facturas, $NumQForAssocModal, $NomProvForAssocModal, $FechaQForAssocModal;
@@ -284,7 +288,7 @@ class Quedans extends Component
 			'quedan_id' => 'required',
 			]);
 			
-		// dd([$this->ArrayCheckedF]);
+		// dd([$this->selectedBoxes]);
 
 
 			foreach ($this->ArrayCheckedF as $MyFactIds => $checkState) {
@@ -410,6 +414,18 @@ class Quedans extends Component
 	{ // Se llama cuando se crea un quedan
 		// dd('numq',$this->num_quedan,'fechae',$this->fecha_emi,'cantNu',$this->cant_num,
 	    //    'fuente',$this->fuente_id,'proj',$this->proyecto_id,'prov',$this->proveedor_id );
+
+		//? Permitiendo que el proyecto lleve por default 'SIN PROYECTO' para que no necesite selecionar
+		$nombProject = "SIN PROYECTO";
+		$this->WithOutProject = Proyecto::select('id')
+		 ->where('nombre_proyecto', '=', $nombProject)
+		 ->value('id');
+
+		 if($this->WithOutProject != null){
+			$this->proyecto_id = $this->WithOutProject;
+		 }
+
+
 		$this->validate([
 			'num_quedan' => 'required',
 			'fecha_emi' => 'required',
@@ -478,7 +494,7 @@ class Quedans extends Component
 				})
 				->orderBy('num_fac', 'desc')->get();
 
-				$another = ['true','true','true','true','true','true','true','true','true','true',];
+				// $this->selectedBoxes = ['true','true','true','true','true','true','true','true','true','true',];
 
 			//* --------------------------- Precargando ArrayCheckedF --------------------
 				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array puede crecer;
@@ -498,8 +514,10 @@ class Quedans extends Component
 
 				// $this->ArrayCheckedF = Factura::select('id','added')
 				// 	->where('added', '=', 1)->get();
+
+				// array_push($this->ArrayCheckedF, true);
 				
-					// dd([$this->ArrayCheckedF]);
+				// 	dd([$this->ArrayCheckedF]);
 
 		// ]);
 
@@ -555,7 +573,7 @@ class Quedans extends Component
 	}
 
 	public function edit($id, $proveedor_id)
-	{ //? se llamda al presionar el botón Editar, en el action del View 
+	{ //? se llamda al presionar el botón Modificar, en el action del View 
 	  //? cargará los campos de updateModal con los valores que se obtengan 
 		//? de la búsqueda por id seleccionado
 

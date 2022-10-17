@@ -18,7 +18,12 @@ aria-labelledby="createDataModalLabel" aria-hidden="true">
             </div>
             <div class="form-group">
                 <label for="num_fac"></label>
-                <input wire:model="num_fac" type="number" class="form-control" id="num_fac" placeholder="Número de factura">@error('num_fac') <span class="error text-danger">{{ $message }}</span> @enderror
+                <input wire:model="num_fac" type="number" class="form-control" id="num_fac" placeholder="Número de factura">
+                @error('num_fac') 
+                <span class="error text-danger">{{ $message }}</span> @enderror
+                @if ($blackErr == true)
+                <span class="error text-danger">Este número ya existe para el proveedor seleccionado.</span>
+                @endif
             </div>
             <div class="form-group">
                 <label for="monto"></label>

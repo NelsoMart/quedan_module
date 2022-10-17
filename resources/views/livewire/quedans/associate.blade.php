@@ -28,7 +28,7 @@
                 <div class="row" style="90%">
                     {{-- todo: Div Search Box --}}
                     <div style="float:left; margin-top: 3%; width: 70%; margin-left: 10%;
-                                    inline: green solid thin; clear:both">
+                                   inline: green solid thin; clear:both">
                         <input id="inputsearch" wire:model='keyWordCheck' type="number" class="form-control" name="search2"
                             id="search2" placeholder="Buscar Num Factura" style="width: 100%;height: 5ch">
                     </div>
@@ -42,6 +42,7 @@
                 </div>
                 <div class="modal-body">
                     <div>
+                        <p>Select All</p>
                         <input type="checkbox" wire:model='selectAll'>
                     </div>
                     {{-- todo: div Input CheckBox --}}
@@ -51,6 +52,7 @@
                                                         margin-top: 4%; margin-left: 4%">
                             <input type="checkbox" class="form-checkbox"
                                    wire:model.defer="ArrayCheckedF.{{ $selector_factura->id }}"
+                                   {{-- wire:model="selectedBoxes.{{ $loop->index }}" --}}
                                    >
 
                             <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
