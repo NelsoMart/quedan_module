@@ -40,26 +40,27 @@
                         </button>
                     </div>
                 </div>
+                <div class="row" style="margin-left: 6%;">
+                    <input type="checkbox" wire:model='selectAll' wire:click="select_All()">
+                    <p style="margin-top: 3%; color: cornflowerblue; margin-left: 1%">Seleccionar todo</p>
+                </div>
                 <div class="modal-body">
-                    <div>
-                        <p>Select All</p>
-                        <input type="checkbox" wire:model='selectAll'>
-                    </div>
+                    
                     {{-- todo: div Input CheckBox --}}
                     <div class="checkbox">
                         @foreach ($select_facturas as $index => $selector_factura)
                         <div class="mt-3" style="margin-bottom: 3%; 
-                                                        margin-top: 4%; margin-left: 4%">
+                                                        margin-top: 2%; margin-left: 4%">
                             <input type="checkbox" class="form-checkbox"
                                    wire:model.defer="ArrayCheckedF.{{ $selector_factura->id }}"
                                    {{-- wire:model="selectedBoxes.{{ $loop->index }}" --}}
                                    >
 
-                            <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span>
-                            <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span>
+                            {{-- <span class="ml-3 text-sm">ID: {{ $selector_factura->id }}</span> --}}
+                            {{-- <span class="ml-3 text-sm">Added: {{ $selector_factura->added }}</span> --}}
                             <span class="ml-3 text-sm">Núm: {{ $selector_factura->num_fac }}</span>
                             <span class="ml-3 text-sm">Monto: {{ number_format($selector_factura->monto, 2) }}</span>
-                            {{-- <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span> --}}
+                            <span class="ml-3 text-sm">Fecha: {{ date("d-m-Y", strtotime($selector_factura->fecha_fac)) }}</span>
                         </div>
                         @endforeach
                     </div>

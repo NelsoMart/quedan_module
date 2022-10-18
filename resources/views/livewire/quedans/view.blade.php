@@ -54,7 +54,7 @@
 						</div> --}}
 
 						<div>
-							<div class="btn btn-sm btn-info" data-toggle="modal" data-target="#createDataModal">
+							<div class="btn btn-sm btn-info" data-toggle="modal" wire:click.prevent="loadCreateQdn()" data-target="#createDataModal">
 							<i class="fa fa-plus"></i>    Añadir Quedan
 							</div>
 							
@@ -81,7 +81,7 @@
 								{{-- <th style="width: 4%">ID</th> --}}
 								<th style="width: 10%">Nums Quedan</th>
 								<th style="width: 15%">Fechas Emis</th>
-								<th style="width: 9%">Cantidades</th>
+								<th style="width: 10%">Cantidades</th>
 								{{-- <th style="width: 35%">Cantidad Letra</th> --}}
 								<th style="width: 20%">Fuentes</th>
 								<th>Proyectos</th>

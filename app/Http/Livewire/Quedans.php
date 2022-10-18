@@ -27,7 +27,7 @@ class Quedans extends Component
 
 	public $quedan_id, $ArrayCheckedF = [], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
 	// public $quedan_id, $ArrayCheckedF = ['id'=>0, 'added'=>''], $ArrayUncheckedF = []; // para insertar en Quedanfacturas
-	public $selectAll = false;
+	public $selectAll = true;
 	public $bulkDisabled = true;
 	public $selectedBoxes = [true, true, true, true, true,true, true,true,true,true,
 	                          true,true,true,true,true,true,true,true];
@@ -143,7 +143,6 @@ class Quedans extends Component
 			->orderBy('id', 'desc')->get();
 
 		$this->dispatchBrowserEvent('contentChanged');
-
 
 		$keyWord = '%' . $this->keyWord . '%';
 
@@ -274,6 +273,7 @@ class Quedans extends Component
 		$this->select_facturas = null;
 		$this->keyWordCheck = null; // used in associatemodal to search filter
 		$this->NomProvForAssocModal = null;
+		$this->selectAll = false;
 		// $this->NumQForAssocModal = null; // no recetear aquí porque se ocupará in open report autolink
 		$this->functionNumQd();
         $this->emit('closeModal');
@@ -288,8 +288,9 @@ class Quedans extends Component
 			'quedan_id' => 'required',
 			]);
 			
-		// dd([$this->selectedBoxes]);
-
+		//Todo: no insertará registros repetidos en qdnfacturas ni duplicacrá una cantidad repetida en quedan.
+		
+		// dd('algo', $this->quedan_id, [$this->ArrayCheckedF]);
 
 			foreach ($this->ArrayCheckedF as $MyFactIds => $checkState) {
 
@@ -410,12 +411,11 @@ class Quedans extends Component
 		$this->resetInput();
 	}
 
-	public function store()
-	{ // Se llama cuando se crea un quedan
-		// dd('numq',$this->num_quedan,'fechae',$this->fecha_emi,'cantNu',$this->cant_num,
-	    //    'fuente',$this->fuente_id,'proj',$this->proyecto_id,'prov',$this->proveedor_id );
+	public function loadCreateQdn() 
+	{ //Es llamado al momento de dar click en Crear Quedan
 
 		//? Permitiendo que el proyecto lleve por default 'SIN PROYECTO' para que no necesite selecionar
+
 		$nombProject = "SIN PROYECTO";
 		$this->WithOutProject = Proyecto::select('id')
 		 ->where('nombre_proyecto', '=', $nombProject)
@@ -423,7 +423,14 @@ class Quedans extends Component
 
 		 if($this->WithOutProject != null){
 			$this->proyecto_id = $this->WithOutProject;
+			// dd($this->WithOutProject);
 		 }
+	}
+
+	public function store()
+	{ // Se llama cuando se crea un quedan
+		// dd('numq',$this->num_quedan,'fechae',$this->fecha_emi,'cantNu',$this->cant_num,
+	    //    'fuente',$this->fuente_id,'proj',$this->proyecto_id,'prov',$this->proveedor_id );
 
 
 		$this->validate([
@@ -498,8 +505,17 @@ class Quedans extends Component
 
 			//* --------------------------- Precargando ArrayCheckedF --------------------
 				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array puede crecer;
-				$this->ArrayCheckedF = $this->select_facturas->pluck('added','id');
+				// $this->ArrayCheckedF = $this->select_facturas->pluck('id');
 				// $this->ArrayCheckedF = $this->ArrayCheckedF->pluck($another);
+
+				$this->ArrayCheckedF = $this->select_facturas->pluck('added', 'id');
+
+				foreach($this->ArrayCheckedF as $key => $value){
+					if($value == 0){
+						$this->selectAll = false;
+					}
+					// dd($value);
+				}
 
 				//? Bajo esta forma se crea un array que obtiene SÓLO los ids con added=1 reduciendo considerablemente el tamaño del array; pero esto implica hacer otra consulta a la base de datos.
 				// $Misfacturas = Factura::select('id','added')
@@ -528,12 +544,74 @@ class Quedans extends Component
 		$this->proveedor_id = $proveedor_id;
 	}
 
+	public function select_All() 
+	{ //* Es llamado cuando se presiona el botón 'asociar', en view de quedan
+		// return view('livewire.quedans.view', [
+			$this->select_facturas = Factura::join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
+				->select('facturas.id','fecha_fac','num_fac','monto','nombre_proveedor','proveedor_id AS my_provId', 'added')
+				->where('proveedor_id', '=', $this->proveedor_id)
+				->whereIn('added', [ 0, $this->quedan_id ])
+				// ->whereNotBetween('facturas.hiden', [1, 2])
+				//? Es importante mostrar sólo facturas visibles.
+				->where(function ($query) {
+					$query->whereNull('facturas.hiden')
+						  ->orWhere('facturas.hiden', '=', 0);
+				})
+				->orderBy('num_fac', 'desc')->get();
+
+				// $this->selectedBoxes = ['true','true','true','true','true','true','true','true','true','true',];
+
+			//* --------------------------- Precargando ArrayCheckedF --------------------
+				//? Bajo esta forma se recorre el array recuperando TODOS los ids con sus respectivos addeds, y no se tiene que hacer otra consulta; pero el array puede crecer;
+				if($this->selectAll == false){
+					
+					$key = $this->select_facturas->pluck('id');
+					
+					$value = false; // Ojo, debe ir sin comillas
+					foreach ($key as $Mykey) {
+						$this->ArrayCheckedF[$Mykey] = $value;
+					}
+				} else {
+					$key = $this->select_facturas->pluck('id');
+					$value = ['true','true','true','true','true','true','true','true','true','true'];
+	
+					// $this->ArrayCheckedF[$key];
+	
+					// $ar =[];
+					$value = true; // Ojo, debe ir sin comillas
+					foreach ($key as $Mykey) {
+						# code...
+						// array_push($ar, array($Mykey));
+						// $ar[$Mykey] = $value;
+						$this->ArrayCheckedF[$Mykey] = $value;
+						
+						// dd($this->selectAll);
+					}
+	
+					// $arr = ["a" => "apple", "b" => "ball", "c" => "cat"];
+					// 	$key = ["d"];
+					// 	$value = ["dog"];
+					
+					// 	$arr[$key] += $value;
+					// 	print_r($arr);
+	
+						// dd([$ar]);
+						// dd([$this->ArrayCheckedF]);
+				}
+				
+				// $this->ArrayCheckedF = $this->ArrayCheckedF->pluck($another);
+
+				
+
+		// dd($this->select_facturas);
+	}
+
 	public function editQFSearch() 
 	{ //* Es llamado cuando cuando se presiona el botón de 'search', en el cuadro de búsqueda del model checklist
 		// dd('hey!');
 		// $keyWord = '%' . $this->keyWordCheck . '%';
 		// dd($keyWord);
-             $kchecked = $this->keyWordCheck ;
+             $kchecked = $this->keyWordCheck;
 
 		if ($kchecked != null) {
 			// dd('trae algo', $kchecked);

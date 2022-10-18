@@ -66,14 +66,32 @@ class PdfController extends Controller
             ->where('quedanfacturas.quedan_id', '=', $id)
             ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0)
             ->orderBy('quedanfacturas.factura_id', 'asc')
-            ->offset(6) //skip() se puede usar ese ya que es lo mismo
-            ->limit(6) //take() 
+            ->offset(8) //skip() se puede usar ese ya que es lo mismo
+            ->limit(8) //take() 
             ->get();
 
+
+         $getFacturatres = QuedanFactura::join('facturas', 'quedanfacturas.factura_id', '=', 'facturas.id')
+            ->join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
+            ->where('quedanfacturas.quedan_id', '=', $id)
+            ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0)
+            ->orderBy('quedanfacturas.factura_id', 'asc')
+            ->offset(16) //skip() se puede usar ese ya que es lo mismo
+            ->limit(16) //take() 
+            ->get();
+
+            $getFacturacuatro = QuedanFactura::join('facturas', 'quedanfacturas.factura_id', '=', 'facturas.id')
+            ->join('proveedores', 'facturas.proveedor_id', '=', 'proveedores.id')
+            ->where('quedanfacturas.quedan_id', '=', $id)
+            ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0)
+            ->orderBy('quedanfacturas.factura_id', 'asc')
+            ->offset(24) //skip() se puede usar ese ya que es lo mismo
+            ->limit(24) //take() 
+            ->get();
         // $data['title'] = "Welcome to codingdriver.com";
         // $data['content'] = "This is content"; 
 
-        $pdf = PDF::loadView('print_quedan', compact('getQuedan','getFactura', 'getFacturados', 'NumConverted'));
+        $pdf = PDF::loadView('print_quedan', compact('getQuedan','getFactura', 'getFacturados', 'getFacturatres','getFacturacuatro','NumConverted'));
         return $pdf->download('MyQuedan.pdf');
     }    
 }
