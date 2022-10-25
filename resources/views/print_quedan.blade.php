@@ -15,11 +15,17 @@
     /* border: solid red; */
     min-height: 100vh;
  }
+ .numero_quedan{
+   font-size: 15pt;
+   margin-left: 82%;
+   margin-top: 16%;
+   font-weight: bold;
+ }
 
  .cant_letras{
     /* border: 1px solid darkblue; */
     width: 55%; /*lo largo */
-    margin-top: 23%; /*para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
+    margin-top: 3.75%; /para mover hacia arriba seria un numero mas y hacia abajo un numero menos/
     /* margin-left: 13%; para mover del borde de izquierda */
     height: 20px; /* lo ancho*/
 
@@ -34,7 +40,7 @@
    margin-top: -10%;
    padding-top: 30px;
    
-   /* border: 1px solid yellow; */
+  /* border: 1px solid yellow; */
    
  }
 
@@ -65,10 +71,17 @@
 
 /**estilos del cuadro de abajo */
 
+.numero_quedan2{
+   font-size: 15pt;
+   margin-left: 82%;
+   margin-top: 2%;
+   font-weight: bold;
+ }
+
 .cant_letrasdos{
     /* border: 1px solid darkblue; */
     width: 55%; /*lo largo */
-    margin-top: 15%; /* 19para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
+    margin-top: 10%; /* 19para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
     /* margin-left: 13%; para mover del borde de izquierda */
     height: 40px; /* lo ancho*/
 
@@ -162,13 +175,16 @@ width:900% !important;
          <div class="col-xs-12 col-md-3">
             {{-- <div class="cant_letras" >{{$getQuedan->cant_letra}}</div> --}}
             {{-- <div class="cant_letras" >CINCUENTA MIL DOLARES</div> --}}
+            <div class="numero_quedan">N°{{sprintf("%08d", $getQuedan->num_quedan)}}</div>
             <div class="cant_letras" >{{$NumConverted}}</div>
            
          </div>
       <br>
       <br>
       <br>
+     
       <div class="cant_num">$    {{ number_format($getQuedan->cant_num, 2) }}</div>
+
       <div class="col-xs-12 col-md-3">
          <div class="proveedor">{{$getQuedan->nombre_proveedor}}</div>
    </div>
@@ -242,6 +258,8 @@ width:900% !important;
             <div class="col-xs-12 col-md-3">
                {{-- <div class="cant_letrasdos" >{{$getQuedan->cant_letra}}</div> --}}
                {{-- <div class="cant_letrasdos" >CINCUENTA MIL DOLARES</div> --}}
+               <div class="numero_quedan2">N°{{sprintf("%08d", $getQuedan->num_quedan)}}</div>
+
                <div class="cant_letrasdos" >{{$NumConverted}}</div>
                <div class="cant_numdos">$    {{ number_format($getQuedan->cant_num, 2) }}</div>
          </div>
