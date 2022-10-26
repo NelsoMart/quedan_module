@@ -77,7 +77,7 @@ class PdfController extends Controller
             ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0)
             ->orderBy('quedanfacturas.factura_id', 'asc')
             ->offset(16) //skip() se puede usar ese ya que es lo mismo
-            ->limit(16) //take() 
+            ->limit(8) //take() 
             ->get();
 
             $getFacturacuatro = QuedanFactura::join('facturas', 'quedanfacturas.factura_id', '=', 'facturas.id')
@@ -86,7 +86,7 @@ class PdfController extends Controller
             ->whereNull('quedanfacturas.hiden')->orWhere('quedanfacturas.hiden', '=', 0)
             ->orderBy('quedanfacturas.factura_id', 'asc')
             ->offset(24) //skip() se puede usar ese ya que es lo mismo
-            ->limit(24) //take() 
+            ->limit(8) //take() 
             ->get();
         // $data['title'] = "Welcome to codingdriver.com";
         // $data['content'] = "This is content"; 

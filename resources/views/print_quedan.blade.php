@@ -25,7 +25,7 @@
  .cant_letras{
     /* border: 1px solid darkblue; */
     width: 55%; /*lo largo */
-    margin-top: 3.75%; /para mover hacia arriba seria un numero mas y hacia abajo un numero menos/
+    margin-top: 3.75%; /*para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
     /* margin-left: 13%; para mover del borde de izquierda */
     height: 20px; /* lo ancho*/
 
@@ -81,7 +81,7 @@
 .cant_letrasdos{
     /* border: 1px solid darkblue; */
     width: 55%; /*lo largo */
-    margin-top: 10%; /* 19para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
+    margin-top: 3.75%; /* 19para mover hacia arriba seria un numero mas y hacia abajo un numero menos*/
     /* margin-left: 13%; para mover del borde de izquierda */
     height: 40px; /* lo ancho*/
 
@@ -175,7 +175,7 @@ width:900% !important;
          <div class="col-xs-12 col-md-3">
             {{-- <div class="cant_letras" >{{$getQuedan->cant_letra}}</div> --}}
             {{-- <div class="cant_letras" >CINCUENTA MIL DOLARES</div> --}}
-            <div class="numero_quedan">N°{{sprintf("%08d", $getQuedan->num_quedan)}}</div>
+            <div class="numero_quedan">No.  {{sprintf("%08d", $getQuedan->num_quedan)}}</div>
             <div class="cant_letras" >{{$NumConverted}}</div>
            
          </div>
@@ -258,8 +258,7 @@ width:900% !important;
             <div class="col-xs-12 col-md-3">
                {{-- <div class="cant_letrasdos" >{{$getQuedan->cant_letra}}</div> --}}
                {{-- <div class="cant_letrasdos" >CINCUENTA MIL DOLARES</div> --}}
-               <div class="numero_quedan2">N°{{sprintf("%08d", $getQuedan->num_quedan)}}</div>
-
+               <div class="numero_quedan2">No. {{sprintf("%08d", $getQuedan->num_quedan)}}</div>
                <div class="cant_letrasdos" >{{$NumConverted}}</div>
                <div class="cant_numdos">$    {{ number_format($getQuedan->cant_num, 2) }}</div>
          </div>
@@ -363,7 +362,7 @@ width:900% !important;
 
 
                      {{-- border: 1px solid orange;  --}}
-               <div style="margin-top:-142px; float:right ; width:100%;"  >
+               <div style="margin-top:-129.50px; float:right ; width:100%;"  >
 
                   @foreach ($getFacturacuatro as $item)
 
@@ -384,7 +383,7 @@ width:900% !important;
 
    <div >     
                                 {{-- border: 1px solid red; --}}
-      <div class="col-xs-12 col-md-3" style=" margin-top: 100px; " >
+      <div class="col-xs-12 col-md-3" style=" margin-top: 300px; " >
                   <span class="caja_inline" style="margin-left: 5%;">FECHA FACTURA</span>
                   <span class="caja_inline">NO. FACTURA</span>
                   <span class="caja_inline">VALOR FACTURA</span>
@@ -409,7 +408,7 @@ width:900% !important;
 
 
                      {{-- border: 1px solid orange;  --}}
-               <div style="margin-top:-142px; float:right ; width:100%;"  >
+               <div style="margin-top:-18%; float:right ; width:100%;"  >
 
                   @foreach ($getFacturacuatro as $item)
 
